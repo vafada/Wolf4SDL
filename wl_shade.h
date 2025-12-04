@@ -7,9 +7,9 @@
 #define LSHADE_NORMAL 0
 #define LSHADE_FOG 5
 
-extern  byte shadetable[SHADE_COUNT][256];
+extern byte shadetable[SHADE_COUNT][256];
 
-void    InitLevelShadeTable (void);
-byte    *GetShade (int scale, unsigned flags);
+void InitLevelShadeTable(void);
+byte *GetShade(int scale, unsigned flags);
 
 #endif

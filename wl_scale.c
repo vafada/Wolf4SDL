@@ -6,7 +6,6 @@
 #include "wl_shade.h"
 #endif
 
-
 /*
 =============================================================================
 
@@ -14,7 +13,6 @@
 
 =============================================================================
 */
-
 
 /*
 ===================
@@ -32,61 +30,57 @@
 ===================
 */
 
-void ScaleLine (int16_t x, int16_t toppix, fixed fracstep, byte *linesrc, byte *linecmds, byte *shade)
-{
-    byte  *src,*dest;
-    int   color;
-    int   start,end,top;
-    int   startpix,endpix;
-    fixed frac;
+void ScaleLine(int16_t x, int16_t toppix, fixed fracstep, byte *linesrc,
+               byte *linecmds, byte *shade) {
+  byte *src, *dest;
+  int color;
+  int start, end, top;
+  int startpix, endpix;
+  fixed frac;
 
-    for (end = ReadShort(linecmds) >> 1; end; end = ReadShort(linecmds) >> 1)
-    {
-        top = (int16_t)ReadShort(linecmds + 2);
-        start = ReadShort(linecmds + 4) >> 1;
+  for (end = ReadShort(linecmds) >> 1; end; end = ReadShort(linecmds) >> 1) {
+    top = (int16_t)ReadShort(linecmds + 2);
+    start = ReadShort(linecmds + 4) >> 1;
 
-        frac = start * fracstep;
+    frac = start * fracstep;
 
-        endpix = (frac >> FRACBITS) + toppix;
+    endpix = (frac >> FRACBITS) + toppix;
 
-        for (src = &linesrc[top + start]; start != end; start++, src++)
-        {
-            startpix = endpix;
+    for (src = &linesrc[top + start]; start != end; start++, src++) {
+      startpix = endpix;
 
-            if (startpix >= viewheight)
-                break;                          // off the bottom of the view area
+      if (startpix >= viewheight)
+        break; // off the bottom of the view area
 
-            frac += fracstep;
-            endpix = (frac >> FRACBITS) + toppix;
+      frac += fracstep;
+      endpix = (frac >> FRACBITS) + toppix;
 
-            if (endpix < 0)
-                continue;                       // not into the view area
+      if (endpix < 0)
+        continue; // not into the view area
 
-            if (startpix < 0)
-                startpix = 0;                   // clip upper boundary
+      if (startpix < 0)
+        startpix = 0; // clip upper boundary
 
-            if (endpix > viewheight)
-                endpix = viewheight;            // clip lower boundary
+      if (endpix > viewheight)
+        endpix = viewheight; // clip lower boundary
 
 #ifdef USE_SHADING
-            color = shade[*src];
+      color = shade[*src];
 #else
-            color = *src;
+      color = *src;
 #endif
-            dest = vbuf + ylookup[startpix] + x;
+      dest = vbuf + ylookup[startpix] + x;
 
-            while (startpix < endpix)
-            {
-                *dest = color;
-                dest += bufferPitch;
-                startpix++;
-            }
-        }
-
-        linecmds += 6;                          // next segment list
+      while (startpix < endpix) {
+        *dest = color;
+        dest += bufferPitch;
+        startpix++;
+      }
     }
-}
 
+    linecmds += 6; // next segment list
+  }
+}
 
 /*
 ===================
@@ -98,70 +92,65 @@ void ScaleLine (int16_t x, int16_t toppix, fixed fracstep, byte *linesrc, byte *
 ===================
 */
 
-void ScaleShape (visobj_t *sprite)
-{
-    int         i;
-    compshape_t *shape;
-    byte        *linesrc,*linecmds;
-    byte        *shade = NULL;
-    int         height,toppix;
-    int         x1,x2,xcenter;
-    fixed       frac,fracstep;
+void ScaleShape(visobj_t *sprite) {
+  int i;
+  compshape_t *shape;
+  byte *linesrc, *linecmds;
+  byte *shade = NULL;
+  int height, toppix;
+  int x1, x2, xcenter;
+  fixed frac, fracstep;
 
-    height = sprite->viewheight >> 3;        // low three bits are fractional
+  height = sprite->viewheight >> 3; // low three bits are fractional
 
-    if (!height)
-        return;                 // too close or far away
+  if (!height)
+    return; // too close or far away
 
-    linesrc = PM_GetSpritePage(sprite->shapenum);
-    shape = (compshape_t *)linesrc;
+  linesrc = PM_GetSpritePage(sprite->shapenum);
+  shape = (compshape_t *)linesrc;
 #ifdef USE_SHADING
-    shade = GetShade(sprite->viewheight,sprite->flags);
+  shade = GetShade(sprite->viewheight, sprite->flags);
 #endif
-    fracstep = FixedDiv(height,TEXTURESIZE/2);
-    frac = shape->leftpix * fracstep;
+  fracstep = FixedDiv(height, TEXTURESIZE / 2);
+  frac = shape->leftpix * fracstep;
 
-    xcenter = sprite->viewx - height;
-    toppix = centery - height;
+  xcenter = sprite->viewx - height;
+  toppix = centery - height;
 
+  x2 = (frac >> FRACBITS) + xcenter;
+
+  for (i = shape->leftpix; i <= shape->rightpix; i++) {
+    //
+    // calculate edges of the shape
+    //
+    x1 = x2;
+
+    if (x1 >= viewwidth)
+      break; // off the right side of the view area
+
+    frac += fracstep;
     x2 = (frac >> FRACBITS) + xcenter;
 
-    for (i = shape->leftpix; i <= shape->rightpix; i++)
-    {
-        //
-        // calculate edges of the shape
-        //
-        x1 = x2;
+    if (x2 < 0)
+      continue; // not into the view area
 
-        if (x1 >= viewwidth)
-            break;                // off the right side of the view area
+    if (x1 < 0)
+      x1 = 0; // clip left boundary
 
-        frac += fracstep;
-        x2 = (frac >> FRACBITS) + xcenter;
+    if (x2 > viewwidth)
+      x2 = viewwidth; // clip right boundary
 
-        if (x2 < 0)
-            continue;             // not into the view area
+    while (x1 < x2) {
+      if (wallheight[x1] < sprite->viewheight) {
+        linecmds = &linesrc[shape->dataofs[i - shape->leftpix]];
 
-        if (x1 < 0)
-            x1 = 0;               // clip left boundary
+        ScaleLine(x1, toppix, fracstep, linesrc, linecmds, shade);
+      }
 
-        if (x2 > viewwidth)
-            x2 = viewwidth;       // clip right boundary
-
-        while (x1 < x2)
-        {
-            if (wallheight[x1] < sprite->viewheight)
-            {
-                linecmds = &linesrc[shape->dataofs[i - shape->leftpix]];
-
-                ScaleLine (x1,toppix,fracstep,linesrc,linecmds,shade);
-            }
-
-            x1++;
-        }
+      x1++;
     }
+  }
 }
-
 
 /*
 ===================
@@ -175,50 +164,47 @@ void ScaleShape (visobj_t *sprite)
 ===================
 */
 
-void SimpleScaleShape (int dispx, int shapenum, int dispheight)
-{
-    int         i;
-    compshape_t *shape;
-    byte        *linesrc,*linecmds;
-    byte        *shade = NULL;
-    int         height,toppix;
-    int         x1,x2,xcenter;
-    fixed       frac,fracstep;
+void SimpleScaleShape(int dispx, int shapenum, int dispheight) {
+  int i;
+  compshape_t *shape;
+  byte *linesrc, *linecmds;
+  byte *shade = NULL;
+  int height, toppix;
+  int x1, x2, xcenter;
+  fixed frac, fracstep;
 
-    height = dispheight >> 1;
+  height = dispheight >> 1;
 
-    linesrc = PM_GetSpritePage(shapenum);
-    shape = (compshape_t *)linesrc;
+  linesrc = PM_GetSpritePage(shapenum);
+  shape = (compshape_t *)linesrc;
 #ifdef USE_SHADING
-    shade = GetShade(dispheight,FL_FULLBRIGHT);
+  shade = GetShade(dispheight, FL_FULLBRIGHT);
 #endif
-    fracstep = FixedDiv(height,TEXTURESIZE/2);
-    frac = shape->leftpix * fracstep;
+  fracstep = FixedDiv(height, TEXTURESIZE / 2);
+  frac = shape->leftpix * fracstep;
 
-    xcenter = dispx - height;
-    toppix = centery - height;
+  xcenter = dispx - height;
+  toppix = centery - height;
 
+  x2 = (frac >> FRACBITS) + xcenter;
+
+  for (i = shape->leftpix; i <= shape->rightpix; i++) {
+    //
+    // calculate edges of the shape
+    //
+    x1 = x2;
+
+    frac += fracstep;
     x2 = (frac >> FRACBITS) + xcenter;
 
-    for (i = shape->leftpix; i <= shape->rightpix; i++)
-    {
-        //
-        // calculate edges of the shape
-        //
-        x1 = x2;
+    while (x1 < x2) {
+      linecmds = &linesrc[shape->dataofs[i - shape->leftpix]];
 
-        frac += fracstep;
-        x2 = (frac >> FRACBITS) + xcenter;
+      ScaleLine(x1, toppix, fracstep, linesrc, linecmds, shade);
 
-        while (x1 < x2)
-        {
-            linecmds = &linesrc[shape->dataofs[i - shape->leftpix]];
-
-            ScaleLine (x1,toppix,fracstep,linesrc,linecmds,shade);
-
-            x1++;
-        }
+      x1++;
     }
+  }
 }
 
 #ifdef USE_DIR3DSPR
@@ -233,97 +219,92 @@ void SimpleScaleShape (int dispx, int shapenum, int dispheight)
 ===================
 */
 
-void Scale3DShape (visobj_t *sprite, int x1, int x2, fixed ny1, fixed ny2, fixed nx1, fixed nx2)
-{
-    int         i;
-    compshape_t *shape;
-    byte        *linesrc,*linecmds;
-    byte        *shade = NULL;
-    int16_t     scale1,toppix;
-    int16_t     dx,len,slinex;
-    int16_t     xpos[TEXTURESIZE + 1];
-    fixed       height,dheight,height1,height2;
-    fixed       fracstep;
-    fixed       dxx,dzz;
-    fixed       dxa,dza;
+void Scale3DShape(visobj_t *sprite, int x1, int x2, fixed ny1, fixed ny2,
+                  fixed nx1, fixed nx2) {
+  int i;
+  compshape_t *shape;
+  byte *linesrc, *linecmds;
+  byte *shade = NULL;
+  int16_t scale1, toppix;
+  int16_t dx, len, slinex;
+  int16_t xpos[TEXTURESIZE + 1];
+  fixed height, dheight, height1, height2;
+  fixed fracstep;
+  fixed dxx, dzz;
+  fixed dxa, dza;
 
-    linesrc = PM_GetSpritePage(sprite->shapenum);
-    shape = (compshape_t *)linesrc;
+  linesrc = PM_GetSpritePage(sprite->shapenum);
+  shape = (compshape_t *)linesrc;
 
-    len = shape->rightpix - shape->leftpix + 1;
+  len = shape->rightpix - shape->leftpix + 1;
 
-    if (!len)
-        return;
+  if (!len)
+    return;
 
-    dxx = (ny2 - ny1) << 8;
-    dzz = (nx2 - nx1) << 8;
+  dxx = (ny2 - ny1) << 8;
+  dzz = (nx2 - nx1) << 8;
 
-    ny1 += dxx >> 9;
-    nx1 += dzz >> 9;
+  ny1 += dxx >> 9;
+  nx1 += dzz >> 9;
 
-    dxa = -(dxx >> 1);
-    dza = -(dzz >> 1);
-    dxx >>= TEXTURESHIFT;
-    dzz >>= TEXTURESHIFT;
-    dxa += shape->leftpix * dxx;
-    dza += shape->leftpix * dzz;
+  dxa = -(dxx >> 1);
+  dza = -(dzz >> 1);
+  dxx >>= TEXTURESHIFT;
+  dzz >>= TEXTURESHIFT;
+  dxa += shape->leftpix * dxx;
+  dza += shape->leftpix * dzz;
 
-    xpos[0] = (ny1 + (dxa >> 8)) * scale / (nx1 + (dza >> 8)) + centerx;
-    height1 = heightnumerator / ((nx1 + (dza >> 8)) >> 8);
-    height = (((fixed)height1) << 12) + 2048;
+  xpos[0] = (ny1 + (dxa >> 8)) * scale / (nx1 + (dza >> 8)) + centerx;
+  height1 = heightnumerator / ((nx1 + (dza >> 8)) >> 8);
+  height = (((fixed)height1) << 12) + 2048;
 
-    for (i = 1; i <= len; i++)
-    {
-        dxa += dxx;
-        dza += dzz;
-        xpos[i] = (ny1 + (dxa >> 8)) * scale / (nx1 + (dza >> 8)) + centerx;
+  for (i = 1; i <= len; i++) {
+    dxa += dxx;
+    dza += dzz;
+    xpos[i] = (ny1 + (dxa >> 8)) * scale / (nx1 + (dza >> 8)) + centerx;
 
-        if (xpos[i - 1] > viewwidth)
-            break;
-    }
+    if (xpos[i - 1] > viewwidth)
+      break;
+  }
 
-    len = i - 1;
-    dx = xpos[len] - xpos[0];
+  len = i - 1;
+  dx = xpos[len] - xpos[0];
 
-    if (!dx)
-        return;
+  if (!dx)
+    return;
 
-    height2 = heightnumerator / ((nx1 + (dza >> 8)) >> 8);
-    dheight = (((fixed)height2 - (fixed)height1) << 12) / (fixed)dx;
+  height2 = heightnumerator / ((nx1 + (dza >> 8)) >> 8);
+  dheight = (((fixed)height2 - (fixed)height1) << 12) / (fixed)dx;
 
-    if (x2 > viewwidth)
-        x2 = viewwidth;
+  if (x2 > viewwidth)
+    x2 = viewwidth;
 
-    for (i = 0; i < len; i++)
-    {
-        for (slinex = xpos[i]; slinex < xpos[i + 1] && slinex < x2; slinex++)
-        {
-            height += dheight;
+  for (i = 0; i < len; i++) {
+    for (slinex = xpos[i]; slinex < xpos[i + 1] && slinex < x2; slinex++) {
+      height += dheight;
 
-            if (slinex < 0)
-                continue;
+      if (slinex < 0)
+        continue;
 
-            scale1 = height >> 15;
+      scale1 = height >> 15;
 
-            if (!scale1)
-                continue;
+      if (!scale1)
+        continue;
 
-            if (wallheight[slinex] < (height >> 12))
-            {
+      if (wallheight[slinex] < (height >> 12)) {
 #ifdef USE_SHADING
-                shade = GetShade(scale1 << 3,sprite->flags);
+        shade = GetShade(scale1 << 3, sprite->flags);
 #endif
-                fracstep = FixedDiv(scale1,TEXTURESIZE/2);
-                toppix = centery - scale1;
+        fracstep = FixedDiv(scale1, TEXTURESIZE / 2);
+        toppix = centery - scale1;
 
-                linecmds = &linesrc[shape->dataofs[i]];
+        linecmds = &linesrc[shape->dataofs[i]];
 
-                ScaleLine (slinex,toppix,fracstep,linesrc,linecmds,shade);
-            }
-        }
+        ScaleLine(slinex, toppix, fracstep, linesrc, linecmds, shade);
+      }
     }
+  }
 }
-
 
 /*
 ========================
@@ -333,105 +314,113 @@ void Scale3DShape (visobj_t *sprite, int x1, int x2, fixed ny1, fixed ny2, fixed
 ========================
 */
 
-void Transform3DShape (visobj_t *sprite)
-{
-    #define SIZEADD 1024
+void Transform3DShape(visobj_t *sprite) {
+#define SIZEADD 1024
 
-    fixed nx1,nx2,ny1,ny2;
-    int   viewx1,viewx2;
-    fixed diradd;
-    fixed gy1,gy2,gx,gyt1,gyt2,gxt;
-    fixed gx1,gx2,gy,gxt1,gxt2,gyt;
+  fixed nx1, nx2, ny1, ny2;
+  int viewx1, viewx2;
+  fixed diradd;
+  fixed gy1, gy2, gx, gyt1, gyt2, gxt;
+  fixed gx1, gx2, gy, gxt1, gxt2, gyt;
+
+  //
+  // the following values for "diradd" aren't optimized yet
+  // if you have problems with sprites being visible through wall edges
+  // where they shouldn't, you can try to adjust these values and SIZEADD
+  //
+  switch (sprite->flags & FL_DIR_POS_MASK) {
+  case FL_DIR_POS_FW:
+    diradd = 0x7ff0 + 0x8000;
+    break;
+  case FL_DIR_POS_BW:
+    diradd = -0x7ff0 + 0x8000;
+    break;
+  case FL_DIR_POS_MID:
+    diradd = 0x8000;
+    break;
+
+  default:
+    Quit("Bad 3D sprite dir at %dx%d (shapenum = %d)", sprite->tilex,
+         sprite->tiley, sprite->shapenum);
+  }
+
+  if (sprite->flags & FL_DIR_VERT_FLAG) {
+    //
+    // translate point to view centered coordinates
+    //
+    gy1 = (((fixed)sprite->tiley) << TILESHIFT) + 0x8000 - viewy - 0x8000L -
+          SIZEADD;
+    gy2 = gy1 + 0x10000L + (2 * SIZEADD);
+    gx = (((fixed)sprite->tilex) << TILESHIFT) + diradd - viewx;
 
     //
-    // the following values for "diradd" aren't optimized yet
-    // if you have problems with sprites being visible through wall edges
-    // where they shouldn't, you can try to adjust these values and SIZEADD
+    // calculate nx
     //
-    switch (sprite->flags & FL_DIR_POS_MASK)
-    {
-        case FL_DIR_POS_FW: diradd = 0x7ff0 + 0x8000; break;
-        case FL_DIR_POS_BW: diradd = -0x7ff0 + 0x8000; break;
-        case FL_DIR_POS_MID: diradd = 0x8000; break;
-
-        default:
-            Quit ("Bad 3D sprite dir at %dx%d (shapenum = %d)",sprite->tilex,sprite->tiley,sprite->shapenum);
-    }
-
-    if (sprite->flags & FL_DIR_VERT_FLAG)
-    {
-        //
-        // translate point to view centered coordinates
-        //
-        gy1 = (((fixed)sprite->tiley) << TILESHIFT) + 0x8000 - viewy - 0x8000L - SIZEADD;
-        gy2 = gy1 + 0x10000L + (2 * SIZEADD);
-        gx = (((fixed)sprite->tilex) << TILESHIFT) + diradd - viewx;
-
-        //
-        // calculate nx
-        //
-        gxt = FixedMul(gx,viewcos);
-        gyt1 = FixedMul(gy1,viewsin);
-        gyt2 = FixedMul(gy2,viewsin);
-        nx1 = gxt - gyt1;
-        nx2 = gxt - gyt2;
-
-        //
-        // calculate ny
-        //
-        gxt = FixedMul(gx,viewsin);
-        gyt1 = FixedMul(gy1,viewcos);
-        gyt2 = FixedMul(gy2,viewcos);
-        ny1 = gyt1 + gxt;
-        ny2 = gyt2 + gxt;
-    }
-    else
-    {
-
-        //
-        // translate point to view centered coordinates
-        //
-        gx1 = (((fixed)sprite->tilex) << TILESHIFT) + 0x8000 - viewx - 0x8000L - SIZEADD;
-        gx2 = gx1 + 0x10000L + (2 * SIZEADD);
-        gy = (((fixed)sprite->tiley) << TILESHIFT) + diradd - viewy;
-
-        //
-        // calculate nx
-        //
-        gxt1 = FixedMul(gx1,viewcos);
-        gxt2 = FixedMul(gx2,viewcos);
-        gyt = FixedMul(gy,viewsin);
-        nx1 = gxt1 - gyt;
-        nx2 = gxt2 - gyt;
-
-        //
-        // calculate ny
-        //
-        gxt1 = FixedMul(gx1,viewsin);
-        gxt2 = FixedMul(gx2,viewsin);
-        gyt = FixedMul(gy,viewcos);
-        ny1 = gyt + gxt1;
-        ny2 = gyt + gxt2;
-    }
-
-    if (nx1 < 0 || nx2 < 0)
-        return;              // TODO: Clip on viewplane
+    gxt = FixedMul(gx, viewcos);
+    gyt1 = FixedMul(gy1, viewsin);
+    gyt2 = FixedMul(gy2, viewsin);
+    nx1 = gxt - gyt1;
+    nx2 = gxt - gyt2;
 
     //
-    // calculate perspective ratio
+    // calculate ny
     //
-    if (nx1 >= 0 && nx1 <= 1792) nx1 = 1792;
-    if (nx1 < 0 && nx1 >= -1792) nx1 = -1792;
-    if (nx2 >= 0 && nx2 <= 1792) nx2 = 1792;
-    if (nx2 < 0 && nx2 >= -1792) nx2 = -1792;
+    gxt = FixedMul(gx, viewsin);
+    gyt1 = FixedMul(gy1, viewcos);
+    gyt2 = FixedMul(gy2, viewcos);
+    ny1 = gyt1 + gxt;
+    ny2 = gyt2 + gxt;
+  } else {
 
-    viewx1 = (int)(centerx + ny1 * scale / nx1);
-    viewx2 = (int)(centerx + ny2 * scale / nx2);
+    //
+    // translate point to view centered coordinates
+    //
+    gx1 = (((fixed)sprite->tilex) << TILESHIFT) + 0x8000 - viewx - 0x8000L -
+          SIZEADD;
+    gx2 = gx1 + 0x10000L + (2 * SIZEADD);
+    gy = (((fixed)sprite->tiley) << TILESHIFT) + diradd - viewy;
 
-    if (viewx2 < viewx1)
-        Scale3DShape (sprite,viewx2,viewx1,ny2,ny1,nx2,nx1);
-    else
-        Scale3DShape (sprite,viewx1,viewx2,ny1,ny2,nx1,nx2);
+    //
+    // calculate nx
+    //
+    gxt1 = FixedMul(gx1, viewcos);
+    gxt2 = FixedMul(gx2, viewcos);
+    gyt = FixedMul(gy, viewsin);
+    nx1 = gxt1 - gyt;
+    nx2 = gxt2 - gyt;
+
+    //
+    // calculate ny
+    //
+    gxt1 = FixedMul(gx1, viewsin);
+    gxt2 = FixedMul(gx2, viewsin);
+    gyt = FixedMul(gy, viewcos);
+    ny1 = gyt + gxt1;
+    ny2 = gyt + gxt2;
+  }
+
+  if (nx1 < 0 || nx2 < 0)
+    return; // TODO: Clip on viewplane
+
+  //
+  // calculate perspective ratio
+  //
+  if (nx1 >= 0 && nx1 <= 1792)
+    nx1 = 1792;
+  if (nx1 < 0 && nx1 >= -1792)
+    nx1 = -1792;
+  if (nx2 >= 0 && nx2 <= 1792)
+    nx2 = 1792;
+  if (nx2 < 0 && nx2 >= -1792)
+    nx2 = -1792;
+
+  viewx1 = (int)(centerx + ny1 * scale / nx1);
+  viewx2 = (int)(centerx + ny2 * scale / nx2);
+
+  if (viewx2 < viewx1)
+    Scale3DShape(sprite, viewx2, viewx1, ny2, ny1, nx2, nx1);
+  else
+    Scale3DShape(sprite, viewx1, viewx2, ny1, ny2, nx1, nx2);
 }
 
 #endif
