@@ -137,11 +137,7 @@ void Victory(void) {
     DrawStatusBorder(VIEWCOLOR);
   }
 
-#ifdef JAPAN
-#ifndef JAPDEMO
-  VWB_DrawPic(0, 0, C_ENDRATIOSPIC);
-#endif
-#else
+
   Write(18, 2, STR_YOUWIN);
 
   Write(TIMEX, TIMEY - 2, STR_TOTALTIME);
@@ -152,11 +148,9 @@ void Victory(void) {
   Write(RATIOX + 4, RATIOY + 2, STR_RATSECRET);
   Write(RATIOX, RATIOY + 4, STR_RATTREASURE);
 
-#endif
 
-#ifndef JAPDEMO
   VWB_DrawPic(8, 4, L_BJWINSPIC);
-#endif
+
 
   for (kr = sr = tr = sec = i = 0; i < LRpack; i++) {
     sec += LevelRatios[i].time;
@@ -252,7 +246,6 @@ void Victory(void) {
 
 //==========================================================================
 
-#ifndef JAPAN
 /*
 ==================
 =
@@ -273,7 +266,6 @@ void PG13(void) {
 
   VW_FadeOut();
 }
-#endif
 
 //==========================================================================
 
@@ -498,9 +490,6 @@ void LevelCompleted(void) {
   IN_ClearKeysDown();
   IN_StartAck();
 
-#ifdef JAPAN
-  VWB_DrawPic(0, 0, C_INTERMISSIONPIC);
-#endif
   VWB_DrawPic(0, 16, L_GUYPIC);
 
 #ifndef SPEAR
@@ -510,7 +499,6 @@ void LevelCompleted(void) {
       gamestate.mapon < 17)
 #endif
   {
-#ifndef JAPAN
 
     Write(14, 2, "floor\ncompleted");
     Write(14, 7, STR_BONUS "     0");
@@ -522,7 +510,6 @@ void LevelCompleted(void) {
     Write(1, 18, STR_RAT2TREASURE);
 
     Write(26, 2, itoa(gamestate.mapon + 1, tempstr, 10));
-#endif
 
     Write(26, 12, parTimes[gamestate.episode * 10 + gamestate.mapon].timestr);
 
@@ -1133,7 +1120,6 @@ void CheckHighScore(int32_t score, word other) {
 
 #ifndef UPLOAD
 #ifndef SPEAR
-#ifndef JAPAN
 ////////////////////////////////////////////////////////
 //
 // NON-SHAREWARE NOTICE
@@ -1167,7 +1153,6 @@ void NonShareware(void) {
   VW_FadeIn();
   IN_Ack();
 }
-#endif
 #endif
 #endif
 

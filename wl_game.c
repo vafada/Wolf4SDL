@@ -1489,10 +1489,8 @@ void GameLoop(void) {
         ClearMemory();
 
         CheckHighScore(gamestate.score, gamestate.mapon + 1);
-#ifndef JAPAN
         snprintf(MainMenu[viewscores].string,
                  sizeof(MainMenu[viewscores].string), STR_VS);
-#endif
         MainMenu[viewscores].routine = CP_ViewScores;
         return;
       }
@@ -1507,10 +1505,8 @@ void GameLoop(void) {
         ClearMemory();
 
         CheckHighScore(gamestate.score, gamestate.mapon + 1);
-#ifndef JAPAN
         snprintf(MainMenu[viewscores].string,
                  sizeof(MainMenu[viewscores].string), STR_VS);
-#endif
         MainMenu[viewscores].routine = CP_ViewScores;
         return;
       }
@@ -1587,10 +1583,8 @@ void GameLoop(void) {
       ClearMemory();
 
       CheckHighScore(gamestate.score, gamestate.mapon + 1);
-#ifndef JAPAN
       snprintf(MainMenu[viewscores].string, sizeof(MainMenu[viewscores].string),
                STR_VS);
-#endif
       MainMenu[viewscores].routine = CP_ViewScores;
       return;
 
@@ -1610,10 +1604,8 @@ void GameLoop(void) {
       ClearMemory();
 
       CheckHighScore(gamestate.score, gamestate.mapon + 1);
-#ifndef JAPAN
       snprintf(MainMenu[viewscores].string, sizeof(MainMenu[viewscores].string),
                STR_VS);
-#endif
       MainMenu[viewscores].routine = CP_ViewScores;
       return;
 

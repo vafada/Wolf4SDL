@@ -822,7 +822,6 @@ void FinishSignon(void) {
     IN_Ack();
   }
 
-#ifndef JAPAN
   VW_Bar(0, 189, 300, 11, VL_GetPixel(0, 0));
 
   PrintY = 190;
@@ -831,7 +830,6 @@ void FinishSignon(void) {
   US_CPrint("Working...");
 
   VW_UpdateScreen();
-#endif
 
   SETFONTCOLOR(0, 15);
 #else
@@ -1324,11 +1322,9 @@ static void DemoLoop() {
 
 #ifndef GOODTIMES
 #ifndef SPEAR
-#ifndef JAPAN
   if (!param_nowait) {
     NonShareware();
   }
-#endif
 #else
 #ifndef GOODTIMES
 #ifndef SPEARDEMO
@@ -1344,11 +1340,9 @@ static void DemoLoop() {
 
   StartCPMusic(INTROSONG);
 
-#ifndef JAPAN
   if (!param_nowait) {
     PG13();
   }
-#endif
 
 #endif
 

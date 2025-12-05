@@ -64,7 +64,6 @@ static boolean layoutdone;
 
 //===========================================================================
 
-#ifndef JAPAN
 /*
 =====================
 =
@@ -95,8 +94,9 @@ int ParseNumber(void) {
   // scan until a number is found
   //
   ch = *text;
-  while (ch < '0' || ch > '9')
+  while (ch < '0' || ch > '9') {
     ch = *++text;
+  }
 
   //
   // copy the number out
@@ -199,17 +199,19 @@ void HandleCommand(void) {
 
   case 'C': // ^c<hex digit> changes text color
     i = toupper(*++text);
-    if (i >= '0' && i <= '9')
+    if (i >= '0' && i <= '9') {
       fontcolor = i - '0';
-    else if (i >= 'A' && i <= 'F')
+    } else if (i >= 'A' && i <= 'F') {
       fontcolor = i - 'A' + 10;
+    }
 
     fontcolor *= 16;
     i = toupper(*++text);
-    if (i >= '0' && i <= '9')
+    if (i >= '0' && i <= '9') {
       fontcolor += i - '0';
-    else if (i >= 'A' && i <= 'F')
+    } else if (i >= 'A' && i <= 'F') {
       fontcolor += i - 'A' + 10;
+    }
     text++;
     break;
 
@@ -240,29 +242,35 @@ void HandleCommand(void) {
     // adjust margins
     //
     picmid = picx + picwidth / 2;
-    if (picmid > SCREENMID)
+    if (picmid > SCREENMID) {
       margin = picx - PICMARGIN; // new right margin
-    else
+    } else {
       margin = picx + picwidth + PICMARGIN; // new left margin
+    }
 
     top = (picy - TOPMARGIN) / FONTHEIGHT;
-    if (top < 0)
+    if (top < 0) {
       top = 0;
+    }
     bottom = (picy + picheight - TOPMARGIN) / FONTHEIGHT;
-    if (bottom >= TEXTROWS)
+    if (bottom >= TEXTROWS) {
       bottom = TEXTROWS - 1;
+    }
 
-    for (i = top; i <= bottom; i++)
-      if (picmid > SCREENMID)
+    for (i = top; i <= bottom; i++) {
+      if (picmid > SCREENMID) {
         rightmargin[i] = margin;
-      else
+      } else {
         leftmargin[i] = margin;
+      }
+    }
 
     //
     // adjust this line if needed
     //
-    if (px < (int)leftmargin[rowon])
+    if (px < (int)leftmargin[rowon]) {
       px = leftmargin[rowon];
+    }
     break;
   }
 }
@@ -337,8 +345,9 @@ void HandleWord(void) {
   wordindex = 1;
   while (*text > 32) {
     wword[wordindex] = *text++;
-    if (++wordindex == WORDLIMIT)
+    if (++wordindex == WORDLIMIT) {
       Quit("PageLayout: Word limit exceeded");
+    }
   }
   wword[wordindex] = 0; // stick a null at end for C
 
@@ -349,8 +358,9 @@ void HandleWord(void) {
 
   while (px + wwidth > (int)rightmargin[rowon]) {
     NewLine();
-    if (layoutdone)
+    if (layoutdone) {
       return; // overflowed page
+    }
   }
 
   //
@@ -410,11 +420,13 @@ void PageLayout(boolean shownumber) {
   //
   // make sure we are starting layout text (^P first command)
   //
-  while (*text <= 32)
+  while (*text <= 32) {
     text++;
+  }
 
-  if (*text != '^' || toupper(*++text) != 'P')
+  if (*text != '^' || toupper(*++text) != 'P') {
     Quit("PageLayout: Text not headed with ^P");
+  }
 
   while (*text++ != '\n')
     ;
@@ -425,15 +437,16 @@ void PageLayout(boolean shownumber) {
   do {
     ch = *text;
 
-    if (ch == '^')
+    if (ch == '^') {
       HandleCommand();
-    else if (ch == 9) {
+    } else if (ch == 9) {
       px = (px + 8) & 0xf8;
       text++;
-    } else if (ch <= 32)
+    } else if (ch <= 32) {
       HandleCtrls();
-    else
+    } else {
       HandleWord();
+    }
 
   } while (!layoutdone);
 
@@ -467,8 +480,9 @@ void BackPage(void) {
   pagenum--;
   do {
     text--;
-    if (*text == '^' && toupper(*(text + 1)) == 'P')
+    if (*text == '^' && toupper(*(text + 1)) == 'P') {
       return;
+    }
   } while (1);
 }
 
@@ -495,21 +509,25 @@ void CacheLayout(void) {
   do {
     if (*text == '^') {
       ch = toupper(*++text);
-      if (ch == 'P') // start of a page
+      if (ch == 'P') { // start of a page
         numpages++;
+      }
       if (ch == 'E') // end of file, so return
       {
         text = textstart;
         return;
       }
 
-      if (ch == 'G') // draw graphic command
+      if (ch == 'G') { // draw graphic command
         ParsePicCommand();
+      }
 
-      if (ch == 'T') // timed draw graphic command
+      if (ch == 'T') { // timed draw graphic command
         ParseTimedCommand();
-    } else
+      }
+    } else {
       text++;
+    }
 
   } while (text < bombpoint);
 
@@ -525,51 +543,16 @@ void CacheLayout(void) {
 =====================
 */
 
-#ifdef JAPAN
-void ShowArticle(int which)
-#else
-void ShowArticle(char *article)
-#endif
-{
-#ifdef JAPAN
-  int snames[10] = {H_HELP1PIC, H_HELP2PIC, H_HELP3PIC, H_HELP4PIC,
-                    H_HELP5PIC, H_HELP6PIC, H_HELP7PIC, H_HELP8PIC,
-                    H_HELP9PIC, H_HELP10PIC};
-  int enames[14] = {0,
-                    0,
-#ifndef JAPDEMO
-                    C_ENDGAME1APIC,
-                    C_ENDGAME1BPIC,
-                    C_ENDGAME2APIC,
-                    C_ENDGAME2BPIC,
-                    C_ENDGAME3APIC,
-                    C_ENDGAME3BPIC,
-                    C_ENDGAME4APIC,
-                    C_ENDGAME4BPIC,
-                    C_ENDGAME5APIC,
-                    C_ENDGAME5BPIC,
-                    C_ENDGAME6APIC,
-                    C_ENDGAME6BPIC
-#endif
-  };
-#endif
+void ShowArticle(char *article) {
   unsigned oldfontnumber;
   boolean newpage, firstpage;
   ControlInfo ci;
 
-#ifdef JAPAN
-  pagenum = 1;
-  if (!which)
-    numpages = 10;
-  else
-    numpages = 2;
-#else
   text = article;
   oldfontnumber = fontnumber;
   fontnumber = 0;
   VWB_Bar(0, 0, 320, 200, BACKCOLOR);
   CacheLayout();
-#endif
 
   newpage = true;
   firstpage = true;
@@ -577,14 +560,7 @@ void ShowArticle(char *article)
   do {
     if (newpage) {
       newpage = false;
-#ifdef JAPAN
-      if (!which)
-        VWB_DrawPic(0, 0, snames[pagenum - 1]);
-      else
-        VWB_DrawPic(0, 0, enames[which * 2 + pagenum - 1]);
-#else
       PageLayout(true);
-#endif
       VW_UpdateScreen();
       if (firstpage) {
         VL_FadeIn(0, 255, gamepal, 10);
@@ -602,8 +578,9 @@ void ShowArticle(char *article)
       break;
 
     default:
-      if (ci.button0)
+      if (ci.button0) {
         dir = dir_South;
+      }
       switch (LastScan) {
       case sc_UpArrow:
       case sc_PgUp:
@@ -625,12 +602,8 @@ void ShowArticle(char *article)
     case dir_North:
     case dir_West:
       if (pagenum > 1) {
-#ifndef JAPAN
         BackPage();
         BackPage();
-#else
-        pagenum--;
-#endif
         newpage = true;
       }
       TicDelay(20);
@@ -640,9 +613,6 @@ void ShowArticle(char *article)
     case dir_East:
       if (pagenum < numpages) {
         newpage = true;
-#ifdef JAPAN
-        pagenum++;
-#endif
       }
       TicDelay(20);
       break;
@@ -655,7 +625,6 @@ void ShowArticle(char *article)
 
 //===========================================================================
 
-#ifndef JAPAN
 #ifdef ARTSEXTERN
 int endextern = T_ENDART1;
 #ifndef SPEAR
@@ -663,7 +632,6 @@ int helpextern = T_HELPART;
 #endif
 #endif
 char helpfilename[13] = "HELPART.", endfilename[13] = "ENDART1.";
-#endif
 
 /*
 =================
@@ -680,11 +648,6 @@ void HelpScreens(void) {
   void *layout;
 #endif
 
-#ifdef JAPAN
-  ShowArticle(0);
-  VW_FadeOut();
-  FreeMusic();
-#else
 
 #ifdef ARTSEXTERN
   artnum = helpextern;
@@ -703,7 +666,6 @@ void HelpScreens(void) {
   VW_FadeOut();
 
   FreeMusic();
-#endif
 }
 #endif
 
@@ -718,18 +680,6 @@ void EndText(void) {
 #endif
 
   ClearMemory();
-
-#ifdef JAPAN
-  ShowArticle(gamestate.episode + 1);
-
-  VW_FadeOut();
-
-  SETFONTCOLOR(0, 15);
-  IN_ClearKeysDown();
-  IN_CenterMouse();
-
-  FreeMusic();
-#else
 
 #ifdef ARTSEXTERN
   artnum = endextern + gamestate.episode;
@@ -752,6 +702,4 @@ void EndText(void) {
   IN_CenterMouse();
 
   FreeMusic();
-#endif
 }
-#endif
