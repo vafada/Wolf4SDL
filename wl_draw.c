@@ -211,9 +211,9 @@ boolean TransformTile(int tx, int ty, short *dispx, short *dispheight) {
   //
   // calculate height / perspective ratio
   //
-  if (nx < MINDIST) // too close, don't overflow the divide
+  if (nx < MINDIST) { // too close, don't overflow the divide
     *dispheight = 0;
-  else {
+  } else {
     *dispx = (short)(centerx + ny * scale / nx);
     *dispheight = (short)(heightnumerator / (nx >> 8));
   }
@@ -221,10 +221,10 @@ boolean TransformTile(int tx, int ty, short *dispx, short *dispheight) {
   //
   // see if it should be grabbed
   //
-  if (nx < TILEGLOBAL && ny > -TILEGLOBAL / 2 && ny < TILEGLOBAL / 2)
+  if (nx < TILEGLOBAL && ny > -TILEGLOBAL / 2 && ny < TILEGLOBAL / 2) {
     return true;
-  else
-    return false;
+  }
+  return false;
 }
 
 //==========================================================================
@@ -260,16 +260,19 @@ int16_t CalcHeight(void) {
 // calculate perspective ratio
 //
 #ifdef BANDEDHOLOWALLS
-  if (nx < MINDIST)
+  if (nx < MINDIST) {
     nx = MINDIST - ((nx / 36) & 3);
+  }
 
   height = (int16_t)(heightnumerator / (nx >> 8));
 
-  if (nx < MINDIST)
+  if (nx < MINDIST) {
     height = 0;
+  }
 #else
-  if (nx < MINDIST)
+  if (nx < MINDIST) {
     nx = MINDIST; // don't let divide overflow
+  }
 
   height = (int16_t)(heightnumerator / (nx >> 8));
 #endif
@@ -299,12 +302,14 @@ void ScalePost(void) {
 #endif
 
   ywcount = yd = wallheight[postx] >> 3;
-  if (yd <= 0)
+  if (yd <= 0) {
     yd = 100;
+  }
 
   yoffs = (centery - ywcount) * bufferPitch;
-  if (yoffs < 0)
+  if (yoffs < 0) {
     yoffs = 0;
+  }
   yoffs += postx;
 
   yendoffs = centery + ywcount - 1;
@@ -318,8 +323,9 @@ void ScalePost(void) {
     }
     yendoffs--;
   }
-  if (yw < 0)
+  if (yw < 0) {
     return;
+  }
 
   col = postsource[yw];
   yendoffs = yendoffs * bufferPitch + postx;
@@ -331,8 +337,9 @@ void ScalePost(void) {
         ywcount += yd;
         yw--;
       } while (ywcount <= 0);
-      if (yw < 0)
+      if (yw < 0) {
         break;
+      }
       col = postsource[yw];
     }
     yendoffs -= bufferPitch;
@@ -351,20 +358,23 @@ void ScaleSkyPost(void) {
   midy = (viewheight / 2) - 1;
 
   yoffs = midy * bufferPitch;
-  if (yoffs < 0)
+  if (yoffs < 0) {
     yoffs = 0;
+  }
   yoffs += postx;
 
   yendoffs = midy + (ywcount * 2) - 1;
 
-  if (yendoffs >= viewheight)
+  if (yendoffs >= viewheight) {
     yendoffs = viewheight - 1;
+  }
 
   int curang = pixelangle[postx] + midangle;
-  if (curang < 0)
+  if (curang < 0) {
     curang += FINEANGLES;
-  else if (curang >= FINEANGLES)
+  } else if (curang >= FINEANGLES) {
     curang -= FINEANGLES;
+  }
   int xtex = curang * USE_SKYWALLPARALLAX * TEXTURESIZE / FINEANGLES;
   texoffs = TEXTUREMASK - ((xtex & (TEXTURESIZE - 1)) << TEXTURESHIFT);
 
@@ -407,12 +417,14 @@ void HitVertWall(void) {
     //
     // check for adjacent doors
     //
-    if (tilemap[xtile - xtilestep][yinttile] & BIT_DOOR)
+    if (tilemap[xtile - xtilestep][yinttile] & BIT_DOOR) {
       wallpic = DOORWALL + 3;
-    else
+    } else {
       wallpic = vertwall[tilehit & ~BIT_WALL];
-  } else
+    }
+  } else {
     wallpic = vertwall[tilehit];
+  }
 
   postsource = PM_GetPage(wallpic) + texture;
 #ifdef USE_SKYWALLPARALLAX
@@ -438,10 +450,11 @@ void HitHorizWall(void) {
 
   texture = ((xintercept - texdelta) >> FIXED2TEXSHIFT) & TEXTUREMASK;
 
-  if (ytilestep == -1)
+  if (ytilestep == -1) {
     yintercept += TILEGLOBAL;
-  else
+  } else {
     texture = TEXTUREMASK - texture;
+  }
 
   wallheight[pixx] = CalcHeight();
   postx = pixx;
@@ -450,12 +463,14 @@ void HitHorizWall(void) {
     //
     // check for adjacent doors
     //
-    if (tilemap[xinttile][ytile - ytilestep] & BIT_DOOR)
+    if (tilemap[xinttile][ytile - ytilestep] & BIT_DOOR) {
       wallpic = DOORWALL + 2;
-    else
+    } else {
       wallpic = horizwall[tilehit & ~BIT_WALL];
-  } else
+    }
+  } else {
     wallpic = horizwall[tilehit];
+  }
 
   postsource = PM_GetPage(wallpic) + texture;
 #ifdef USE_SKYWALLPARALLAX
@@ -553,16 +568,22 @@ void HitVertDoor(void) {
 }
 
 //==========================================================================
-
+// color of the ceiling for each level
 byte vgaCeiling[] = {
 #ifndef SPEAR
-    0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0xbf, 0x4e,
-    0x4e, 0x4e, 0x1d, 0x8d, 0x4e, 0x1d, 0x2d, 0x1d, 0x8d, 0x1d, 0x1d,
-    0x1d, 0x1d, 0x1d, 0x2d, 0xdd, 0x1d, 0x1d, 0x98,
+    // episode 1
+    0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0xbf,
+    // episode 2
+    0x4e, 0x4e, 0x4e, 0x1d, 0x8d, 0x4e, 0x1d, 0x2d, 0x1d, 0x8d,
+    // episode 3
+    0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x2d, 0xdd, 0x1d, 0x1d, 0x98,
 
-    0x1d, 0x9d, 0x2d, 0xdd, 0xdd, 0x9d, 0x2d, 0x4d, 0x1d, 0xdd, 0x7d,
-    0x1d, 0x2d, 0x2d, 0xdd, 0xd7, 0x1d, 0x1d, 0x1d, 0x2d, 0x1d, 0x1d,
-    0x1d, 0x1d, 0xdd, 0xdd, 0x7d, 0xdd, 0xdd, 0xdd
+    // episode 4
+    0x1d, 0x9d, 0x2d, 0xdd, 0xdd, 0x9d, 0x2d, 0x4d, 0x1d, 0xdd,
+    // episode 5
+    0x7d, 0x1d, 0x2d, 0x2d, 0xdd, 0xd7, 0x1d, 0x1d, 0x1d, 0x2d,
+    // episode 6
+    0x1d, 0x1d, 0x1d, 0x1d, 0xdd, 0xdd, 0x7d, 0xdd, 0xdd, 0xdd
 #else
     0x6f, 0x4f, 0x1d, 0xde, 0xdf, 0x2e, 0x7f, 0x9e, 0xae, 0x7f, 0x1d,
     0xde, 0xdf, 0xde, 0xdf, 0xde, 0xe1, 0xdc, 0x2e, 0x1d, 0xdc
@@ -584,12 +605,14 @@ void VGAClearScreen(void) {
   byte *dest = vbuf;
 
   // draw ceiling
-  for (y = 0; y < centery; y++, dest += bufferPitch)
+  for (y = 0; y < centery; y++, dest += bufferPitch) {
     memset(dest, ceiling, viewwidth);
+  }
 
   // draw floor
-  for (; y < viewheight; y++, dest += bufferPitch)
+  for (; y < viewheight; y++, dest += bufferPitch) {
     memset(dest, 0x19, viewwidth);
+  }
 }
 
 //==========================================================================
@@ -615,19 +638,23 @@ int CalcRotate(objtype *ob) {
   viewangle = player->angle + (centerx - ob->viewx) / 8;
 #endif
 
-  if (ob->obclass == rocketobj || ob->obclass == hrocketobj)
+  if (ob->obclass == rocketobj || ob->obclass == hrocketobj) {
     angle = (viewangle - 180) - ob->angle;
-  else
+  } else {
     angle = (viewangle - 180) - dirangle[ob->dir];
+  }
 
   angle += ANGLES / 16;
-  while (angle >= ANGLES)
+  while (angle >= ANGLES) {
     angle -= ANGLES;
-  while (angle < 0)
+  }
+  while (angle < 0) {
     angle += ANGLES;
+  }
 
-  if (ob->state->rotate == 2) // 2 rotation pain frame
-    return 0;                 // pain with shooting frame bugfix
+  if (ob->state->rotate == 2) { // 2 rotation pain frame
+    return 0;                   // pain with shooting frame bugfix
+  }
 
   return angle / (ANGLES / 8);
 }
@@ -655,22 +682,26 @@ void DrawScaleds(void) {
   // place static objects
   //
   for (statptr = &statobjlist[0]; statptr != laststatobj; statptr++) {
-    if ((visptr->shapenum = statptr->shapenum) == -1)
+    if ((visptr->shapenum = statptr->shapenum) == -1) {
       continue; // object has been deleted
+    }
 
-    if (!spotvis[statptr->tilex][statptr->tiley])
+    if (!spotvis[statptr->tilex][statptr->tiley]) {
       continue; // not visable
+    }
 
     if (TransformTile(statptr->tilex, statptr->tiley, &visptr->viewx,
                       &visptr->viewheight) &&
         statptr->flags & FL_BONUS) {
       GetBonus(statptr);
-      if (statptr->shapenum == -1)
+      if (statptr->shapenum == -1) {
         continue; // object has been taken
+      }
     }
 
-    if (!visptr->viewheight)
+    if (!visptr->viewheight) {
       continue; // to close to the object
+    }
 
     if (visptr < &vislist[MAXVISABLE - 1]) // don't let it overflow
     {
@@ -685,8 +716,9 @@ void DrawScaleds(void) {
   // place active objects
   //
   for (obj = player->next; obj; obj = obj->next) {
-    if ((visptr->shapenum = obj->state->shapenum) == 0)
+    if ((visptr->shapenum = obj->state->shapenum) == 0) {
       continue; // no shape
+    }
 
     visspot = (byte *)&spotvis[obj->tilex][obj->tiley];
 
@@ -699,16 +731,19 @@ void DrawScaleds(void) {
         (*(visspot + (MAPSIZE))) || (*(visspot + (MAPSIZE - 1)))) {
       obj->active = ac_yes;
       TransformActor(obj);
-      if (!obj->viewheight)
+      if (!obj->viewheight) {
         continue; // too close or far away
+      }
 
       visptr->viewx = obj->viewx;
       visptr->viewheight = obj->viewheight;
-      if (visptr->shapenum == -1)
+      if (visptr->shapenum == -1) {
         visptr->shapenum = obj->temp1; // special shape
+      }
 
-      if (obj->state->rotate)
+      if (obj->state->rotate) {
         visptr->shapenum += CalcRotate(obj);
+      }
 
       if (visptr < &vislist[MAXVISABLE - 1]) // don't let it overflow
       {
@@ -718,8 +753,9 @@ void DrawScaleds(void) {
         visptr++;
       }
       obj->flags |= FL_VISABLE;
-    } else
+    } else {
       obj->flags &= ~FL_VISABLE;
+    }
   }
 
   //
@@ -727,8 +763,9 @@ void DrawScaleds(void) {
   //
   numvisable = (int)(visptr - &vislist[0]);
 
-  if (!numvisable)
+  if (!numvisable) {
     return; // no visable objects
+  }
 
   for (i = 0; i < numvisable; i++) {
     least = 32000;
@@ -743,9 +780,9 @@ void DrawScaleds(void) {
     // draw farthest
     //
 #ifdef USE_DIR3DSPR
-    if (farthest->flags & FL_DIR_MASK)
+    if (farthest->flags & FL_DIR_MASK) {
       Transform3DShape(farthest);
-    else
+    } else
 #endif
       ScaleShape(farthest);
 
@@ -774,8 +811,9 @@ void DrawPlayerWeapon(void) {
 #ifndef SPEAR
   if (gamestate.victoryflag) {
 #ifndef APOGEE_1_0
-    if (player->state == &s_deathcam && (GetTimeCount() & 32))
+    if (player->state == &s_deathcam && (GetTimeCount() & 32)) {
       SimpleScaleShape(viewwidth / 2, SPR_DEATHCAM, viewheight + 1);
+    }
 #endif
     return;
   }
@@ -786,8 +824,9 @@ void DrawPlayerWeapon(void) {
     SimpleScaleShape(viewwidth / 2, shapenum, viewheight + 1);
   }
 
-  if (demorecord || demoplayback)
+  if (demorecord || demoplayback) {
     SimpleScaleShape(viewwidth / 2, SPR_DEMO, viewheight + 1);
+  }
 }
 
 //==========================================================================
@@ -804,8 +843,9 @@ void CalcTics(void) {
   //
   // calculate tics since last refresh for adaptive timing
   //
-  if (lasttimecount > (int32_t)GetTimeCount())
+  if (lasttimecount > (int32_t)GetTimeCount()) {
     lasttimecount = GetTimeCount(); // if the game was paused a LONG time
+  }
 
   uint32_t curtime = SDL_GetTicks();
   tics = (curtime * 7) / 100 - lasttimecount;
@@ -817,8 +857,9 @@ void CalcTics(void) {
 
   lasttimecount += tics;
 
-  if (tics > MAXTICS)
+  if (tics > MAXTICS) {
     tics = MAXTICS;
+  }
 }
 
 //==========================================================================
@@ -852,10 +893,12 @@ void WallRefresh(void) {
     //
     angle = midangle + pixelangle[pixx]; // delta for this pixel
 
-    if (angle < 0)       // -90 - -1 degree arc
-      angle += ANG360;   // -90 is the same as 270
-    if (angle >= ANG360) // 360-449 degree arc
-      angle -= ANG360;   // -449 is the same as 89
+    if (angle < 0) {   // -90 - -1 degree arc
+      angle += ANG360; // -90 is the same as 270
+    }
+    if (angle >= ANG360) { // 360-449 degree arc
+      angle -= ANG360;     // -449 is the same as 89
+    }
 
     //
     // setup xstep/ystep based on angle
@@ -919,11 +962,12 @@ void WallRefresh(void) {
         //  trace hit vertical pushwall back?
         //
         if (yinttemp >> TILESHIFT == focalty) {
-          if (pwalldir == di_east)
+          if (pwalldir == di_east) {
             xintercept = (focaltx << TILESHIFT) + (pwallpos << 10);
-          else
+          } else {
             xintercept =
                 ((focaltx << TILESHIFT) - TILEGLOBAL) + ((64 - pwallpos) << 10);
+          }
 
           yintercept = yinttemp;
           yinttile = yintercept >> TILESHIFT;
@@ -939,11 +983,12 @@ void WallRefresh(void) {
         // trace hit horizontal pushwall back?
         //
         if (xinttemp >> TILESHIFT == focaltx) {
-          if (pwalldir == di_south)
+          if (pwalldir == di_south) {
             yintercept = (focalty << TILESHIFT) + (pwallpos << 10);
-          else
+          } else {
             yintercept =
                 ((focalty << TILESHIFT) - TILEGLOBAL) + ((64 - pwallpos) << 10);
+          }
 
           xintercept = xinttemp;
           xinttile = xintercept >> TILESHIFT;
@@ -963,12 +1008,14 @@ void WallRefresh(void) {
       //
       // check intersections with vertical walls
       //
-      if ((xtile - xtilestep) == xinttile && (ytile - ytilestep) == yinttile)
+      if ((xtile - xtilestep) == xinttile && (ytile - ytilestep) == yinttile) {
         yinttile = ytile;
+      }
 
       if ((ytilestep == -1 && yinttile <= ytile) ||
-          (ytilestep == 1 && yinttile >= ytile))
+          (ytilestep == 1 && yinttile >= ytile)) {
         goto horizentry;
+      }
     vertentry:
 #ifdef REVEALMAP
       mapseen[xtile][yinttile] = true;
@@ -984,8 +1031,9 @@ void WallRefresh(void) {
           //
           door = &doorobjlist[tilehit & ~BIT_DOOR];
 
-          if (door->action == dr_open)
+          if (door->action == dr_open) {
             goto passvert; // door is open, continue tracing
+          }
 
           yinttemp = yintercept +
                      (ystep >> 1); // add halfstep to current intercept position
@@ -994,16 +1042,18 @@ void WallRefresh(void) {
           // midpoint is outside tile, so it hit the side of the wall before a
           // door
           //
-          if (yinttemp >> TILESHIFT != yinttile)
+          if (yinttemp >> TILESHIFT != yinttile) {
             goto passvert;
+          }
 
           if (door->action != dr_closed) {
             //
             // the trace hit the door plane at pixel position yintercept, see if
             // the door is closed that much
             //
-            if ((word)yinttemp < door->position)
+            if ((word)yinttemp < door->position) {
               goto passvert;
+            }
           }
 
           yintercept = yinttemp;
@@ -1029,8 +1079,9 @@ void WallRefresh(void) {
                  !(xtile == pwallx && yinttile == pwally))) {
               yinttemp = yintercept + ((ystep * pwallposnorm) >> 6);
 
-              if (yinttemp >> TILESHIFT != yinttile)
+              if (yinttemp >> TILESHIFT != yinttile) {
                 goto passvert;
+              }
 
               yintercept = yinttemp;
               xintercept = (((fixed)xtile << TILESHIFT) + TILEGLOBAL) -
@@ -1042,8 +1093,9 @@ void WallRefresh(void) {
             } else {
               yinttemp = yintercept + ((ystep * pwallposinv) >> 6);
 
-              if (yinttemp >> TILESHIFT != yinttile)
+              if (yinttemp >> TILESHIFT != yinttile) {
                 goto passvert;
+              }
 
               yintercept = yinttemp;
               xintercept = ((fixed)xtile << TILESHIFT) - (pwallposinv << 10);
@@ -1053,10 +1105,11 @@ void WallRefresh(void) {
               HitVertWall();
             }
           } else {
-            if (pwalldir == di_north)
+            if (pwalldir == di_north) {
               pwallposi = 64 - pwallpos;
-            else
+            } else {
               pwallposi = pwallpos;
+            }
 
             if ((pwalldir == di_south &&
                  (word)yintercept < (pwallposi << 10)) ||
@@ -1066,17 +1119,19 @@ void WallRefresh(void) {
                 if ((pwalldir == di_south &&
                      (int32_t)((word)yintercept) + ystep < (pwallposi << 10)) ||
                     (pwalldir == di_north &&
-                     (int32_t)((word)yintercept) + ystep > (pwallposi << 10)))
+                     (int32_t)((word)yintercept) + ystep > (pwallposi << 10))) {
                   goto passvert;
+                }
 
                 //
                 // set up a horizontal intercept position
                 //
-                if (pwalldir == di_south)
+                if (pwalldir == di_south) {
                   yintercept = (yinttile << TILESHIFT) + (pwallposi << 10);
-                else
+                } else {
                   yintercept = ((yinttile << TILESHIFT) - TILEGLOBAL) +
                                (pwallposi << 10);
+                }
 
                 xintercept -= (xstep * (64 - pwallpos)) >> 6;
                 xinttile = xintercept >> TILESHIFT;
@@ -1101,18 +1156,20 @@ void WallRefresh(void) {
                 if ((pwalldir == di_south &&
                      (int32_t)((word)yintercept) + ystep > (pwallposi << 10)) ||
                     (pwalldir == di_north &&
-                     (int32_t)((word)yintercept) + ystep < (pwallposi << 10)))
+                     (int32_t)((word)yintercept) + ystep < (pwallposi << 10))) {
                   goto passvert;
+                }
 
                 //
                 // set up a horizontal intercept position
                 //
-                if (pwalldir == di_south)
+                if (pwalldir == di_south) {
                   yintercept =
                       (yinttile << TILESHIFT) - ((64 - pwallpos) << 10);
-                else
+                } else {
                   yintercept =
                       (yinttile << TILESHIFT) + ((64 - pwallpos) << 10);
+                }
 
                 xintercept -= (xstep * pwallpos) >> 6;
                 xinttile = xintercept >> TILESHIFT;
@@ -1147,12 +1204,14 @@ void WallRefresh(void) {
       //
       // check intersections with horizontal walls
       //
-      if ((xtile - xtilestep) == xinttile && (ytile - ytilestep) == yinttile)
+      if ((xtile - xtilestep) == xinttile && (ytile - ytilestep) == yinttile) {
         xinttile = xtile;
+      }
 
       if ((xtilestep == -1 && xinttile <= xtile) ||
-          (xtilestep == 1 && xinttile >= xtile))
+          (xtilestep == 1 && xinttile >= xtile)) {
         goto vertentry;
+      }
 
     horizentry:
 #ifdef REVEALMAP
@@ -1169,8 +1228,9 @@ void WallRefresh(void) {
           //
           door = &doorobjlist[tilehit & ~BIT_DOOR];
 
-          if (door->action == dr_open)
+          if (door->action == dr_open) {
             goto passhoriz; // door is open, continue tracing
+          }
 
           xinttemp =
               xintercept +
@@ -1180,16 +1240,18 @@ void WallRefresh(void) {
           // midpoint is outside tile, so it hit the side of the wall before a
           // door
           //
-          if (xinttemp >> TILESHIFT != xinttile)
+          if (xinttemp >> TILESHIFT != xinttile) {
             goto passhoriz;
+          }
 
           if (door->action != dr_closed) {
             //
             // the trace hit the door plane at pixel position xintercept, see if
             // the door is closed that much
             //
-            if ((word)xinttemp < door->position)
+            if ((word)xinttemp < door->position) {
               goto passhoriz;
+            }
           }
 
           xintercept = xinttemp;
@@ -1215,8 +1277,9 @@ void WallRefresh(void) {
                  !(xinttile == pwallx && ytile == pwally))) {
               xinttemp = xintercept + ((xstep * pwallposnorm) >> 6);
 
-              if (xinttemp >> TILESHIFT != xinttile)
+              if (xinttemp >> TILESHIFT != xinttile) {
                 goto passhoriz;
+              }
 
               xintercept = xinttemp;
               yintercept = (((fixed)ytile << TILESHIFT) + TILEGLOBAL) -
@@ -1228,8 +1291,9 @@ void WallRefresh(void) {
             } else {
               xinttemp = xintercept + ((xstep * pwallposinv) >> 6);
 
-              if (xinttemp >> TILESHIFT != xinttile)
+              if (xinttemp >> TILESHIFT != xinttile) {
                 goto passhoriz;
+              }
 
               xintercept = xinttemp;
               yintercept = ((fixed)ytile << TILESHIFT) - (pwallposinv << 10);
@@ -1239,10 +1303,11 @@ void WallRefresh(void) {
               HitHorizWall();
             }
           } else {
-            if (pwalldir == di_west)
+            if (pwalldir == di_west) {
               pwallposi = 64 - pwallpos;
-            else
+            } else {
               pwallposi = pwallpos;
+            }
 
             if ((pwalldir == di_east && (word)xintercept < (pwallposi << 10)) ||
                 (pwalldir == di_west && (word)xintercept > (pwallposi << 10))) {
@@ -1250,8 +1315,9 @@ void WallRefresh(void) {
                 if ((pwalldir == di_east &&
                      (int32_t)((word)xintercept) + xstep < (pwallposi << 10)) ||
                     (pwalldir == di_west &&
-                     (int32_t)((word)xintercept) + xstep > (pwallposi << 10)))
+                     (int32_t)((word)xintercept) + xstep > (pwallposi << 10))) {
                   goto passhoriz;
+                }
 
                 //
                 // set up a vertical intercept position
@@ -1259,11 +1325,12 @@ void WallRefresh(void) {
                 yintercept -= (ystep * (64 - pwallpos)) >> 6;
                 yinttile = yintercept >> TILESHIFT;
 
-                if (pwalldir == di_east)
+                if (pwalldir == di_east) {
                   xintercept = (xinttile << TILESHIFT) + (pwallposi << 10);
-                else
+                } else {
                   xintercept = ((xinttile << TILESHIFT) - TILEGLOBAL) +
                                (pwallposi << 10);
+                }
 
                 tilehit = pwalltile;
 
@@ -1286,8 +1353,9 @@ void WallRefresh(void) {
                 if ((pwalldir == di_east &&
                      (int32_t)((word)xintercept) + xstep > (pwallposi << 10)) ||
                     (pwalldir == di_west &&
-                     (int32_t)((word)xintercept) + xstep < (pwallposi << 10)))
+                     (int32_t)((word)xintercept) + xstep < (pwallposi << 10))) {
                   goto passhoriz;
+                }
 
                 //
                 // set up a vertical intercept position
@@ -1295,12 +1363,13 @@ void WallRefresh(void) {
                 yintercept -= (ystep * pwallpos) >> 6;
                 yinttile = yintercept >> TILESHIFT;
 
-                if (pwalldir == di_east)
+                if (pwalldir == di_east) {
                   xintercept =
                       (xinttile << TILESHIFT) - ((64 - pwallpos) << 10);
-                else
+                } else {
                   xintercept =
                       (xinttile << TILESHIFT) + ((64 - pwallpos) << 10);
+                }
 
                 tilehit = pwalltile;
 
@@ -1375,16 +1444,18 @@ void ThreeDRefresh(void) {
   if (DEMOCOND_SDL)
 #endif
     if (!tilemap[player->tilex][player->tiley] ||
-        tilemap[player->tilex][player->tiley] & BIT_DOOR)
+        tilemap[player->tilex][player->tiley] & BIT_DOOR) {
       spotvis[player->tilex][player->tiley] =
           true; // Detect all sprites over player fix
+    }
 #ifdef REVEALMAP
   mapseen[player->tilex][player->tiley] = true;
 #endif
 
   vbuf = VL_LockSurface(screenBuffer);
-  if (vbuf == NULL)
+  if (vbuf == NULL) {
     return;
+  }
 
   vbuf += screenofs;
 
@@ -1395,8 +1466,9 @@ void ThreeDRefresh(void) {
   //
   VGAClearScreen();
 #if defined(USE_FEATUREFLAGS) && defined(USE_STARSKY)
-  if (GetFeatureFlags() & FF_STARSKY)
+  if (GetFeatureFlags() & FF_STARSKY) {
     DrawStarSky();
+  }
 #endif
 
   WallRefresh();
@@ -1409,8 +1481,9 @@ void ThreeDRefresh(void) {
 #endif
 
 #if defined(USE_FEATUREFLAGS) && defined(USE_CLOUDSKY)
-  if (GetFeatureFlags() & FF_CLOUDSKY)
+  if (GetFeatureFlags() & FF_CLOUDSKY) {
     DrawCloudPlanes();
+  }
 #endif
 
 #ifdef USE_FLOORCEILINGTEX
@@ -1423,18 +1496,21 @@ void ThreeDRefresh(void) {
   DrawScaleds(); // draw scaled stuff
 
 #if defined(USE_FEATUREFLAGS) && defined(USE_RAIN)
-  if (GetFeatureFlags() & FF_RAIN)
+  if (GetFeatureFlags() & FF_RAIN) {
     DrawRain();
+  }
 #endif
 #if defined(USE_FEATUREFLAGS) && defined(USE_SNOW)
-  if (GetFeatureFlags() & FF_SNOW)
+  if (GetFeatureFlags() & FF_SNOW) {
     DrawSnow();
+  }
 #endif
 
   DrawPlayerWeapon(); // draw player's hands
 
-  if (Keyboard[sc_Tab] && viewsize == 21 && gamestate.weapon != -1)
+  if (Keyboard[sc_Tab] && viewsize == 21 && gamestate.weapon != -1) {
     ShowActStatus();
+  }
 
   VL_UnlockSurface(screenBuffer);
   vbuf = NULL;
