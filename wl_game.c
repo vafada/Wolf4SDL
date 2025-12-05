@@ -153,14 +153,17 @@ void SetSoundLoc(fixed gx, fixed gy) {
   yt = FixedMul(gy, viewcos);
   y = (yt + xt) >> TILESHIFT;
 
-  if (y >= ATABLEMAX)
+  if (y >= ATABLEMAX) {
     y = ATABLEMAX - 1;
-  else if (y <= -ATABLEMAX)
+  } else if (y <= -ATABLEMAX) {
     y = -ATABLEMAX;
-  if (x < 0)
+  }
+  if (x < 0) {
     x = -x;
-  if (x >= ATABLEMAX)
+  }
+  if (x >= ATABLEMAX) {
     x = ATABLEMAX - 1;
+  }
   leftchannel = lefttable[x][y + ATABLEMAX];
   rightchannel = righttable[x][y + ATABLEMAX];
 
@@ -238,8 +241,9 @@ static void ScanInfoPlane(void) {
   for (y = 0; y < mapheight; y++) {
     for (x = 0; x < mapwidth; x++) {
       tile = *start++;
-      if (!tile)
+      if (!tile) {
         continue;
+      }
 
       switch (tile) {
       case 19:
@@ -317,8 +321,9 @@ static void ScanInfoPlane(void) {
         // P wall
         //
       case 98:
-        if (!loadedgame)
+        if (!loadedgame) {
           gamestate.secrettotal++;
+        }
         break;
 
         //
@@ -328,15 +333,17 @@ static void ScanInfoPlane(void) {
       case 181:
       case 182:
       case 183:
-        if (gamestate.difficulty < gd_hard)
+        if (gamestate.difficulty < gd_hard) {
           break;
+        }
         tile -= 36;
       case 144:
       case 145:
       case 146:
       case 147:
-        if (gamestate.difficulty < gd_medium)
+        if (gamestate.difficulty < gd_medium) {
           break;
+        }
         tile -= 36;
       case 108:
       case 109:
@@ -349,15 +356,17 @@ static void ScanInfoPlane(void) {
       case 185:
       case 186:
       case 187:
-        if (gamestate.difficulty < gd_hard)
+        if (gamestate.difficulty < gd_hard) {
           break;
+        }
         tile -= 36;
       case 148:
       case 149:
       case 150:
       case 151:
-        if (gamestate.difficulty < gd_medium)
+        if (gamestate.difficulty < gd_medium) {
           break;
+        }
         tile -= 36;
       case 112:
       case 113:
@@ -376,15 +385,17 @@ static void ScanInfoPlane(void) {
       case 189:
       case 190:
       case 191:
-        if (gamestate.difficulty < gd_hard)
+        if (gamestate.difficulty < gd_hard) {
           break;
+        }
         tile -= 36;
       case 152:
       case 153:
       case 154:
       case 155:
-        if (gamestate.difficulty < gd_medium)
+        if (gamestate.difficulty < gd_medium) {
           break;
+        }
         tile -= 36;
       case 116:
       case 117:
@@ -397,15 +408,17 @@ static void ScanInfoPlane(void) {
       case 193:
       case 194:
       case 195:
-        if (gamestate.difficulty < gd_hard)
+        if (gamestate.difficulty < gd_hard) {
           break;
+        }
         tile -= 36;
       case 156:
       case 157:
       case 158:
       case 159:
-        if (gamestate.difficulty < gd_medium)
+        if (gamestate.difficulty < gd_medium) {
           break;
+        }
         tile -= 36;
       case 120:
       case 121:
@@ -421,15 +434,17 @@ static void ScanInfoPlane(void) {
       case 199:
       case 200:
       case 201:
-        if (gamestate.difficulty < gd_hard)
+        if (gamestate.difficulty < gd_hard) {
           break;
+        }
         tile -= 36;
       case 162:
       case 163:
       case 164:
       case 165:
-        if (gamestate.difficulty < gd_medium)
+        if (gamestate.difficulty < gd_medium) {
           break;
+        }
         tile -= 36;
       case 126:
       case 127:
@@ -442,15 +457,17 @@ static void ScanInfoPlane(void) {
       case 203:
       case 204:
       case 205:
-        if (gamestate.difficulty < gd_hard)
+        if (gamestate.difficulty < gd_hard) {
           break;
+        }
         tile -= 36;
       case 166:
       case 167:
       case 168:
       case 169:
-        if (gamestate.difficulty < gd_medium)
+        if (gamestate.difficulty < gd_medium) {
           break;
+        }
         tile -= 36;
       case 130:
       case 131:
@@ -466,15 +483,17 @@ static void ScanInfoPlane(void) {
       case 207:
       case 208:
       case 209:
-        if (gamestate.difficulty < gd_hard)
+        if (gamestate.difficulty < gd_hard) {
           break;
+        }
         tile -= 36;
       case 170:
       case 171:
       case 172:
       case 173:
-        if (gamestate.difficulty < gd_medium)
+        if (gamestate.difficulty < gd_medium) {
           break;
+        }
         tile -= 36;
       case 134:
       case 135:
@@ -487,15 +506,17 @@ static void ScanInfoPlane(void) {
       case 211:
       case 212:
       case 213:
-        if (gamestate.difficulty < gd_hard)
+        if (gamestate.difficulty < gd_hard) {
           break;
+        }
         tile -= 36;
       case 174:
       case 175:
       case 176:
       case 177:
-        if (gamestate.difficulty < gd_medium)
+        if (gamestate.difficulty < gd_medium) {
           break;
+        }
         tile -= 36;
       case 138:
       case 139:
@@ -558,15 +579,17 @@ static void ScanInfoPlane(void) {
       case 253:
       case 254:
       case 255:
-        if (gamestate.difficulty < gd_hard)
+        if (gamestate.difficulty < gd_hard) {
           break;
+        }
         tile -= 18;
       case 234:
       case 235:
       case 236:
       case 237:
-        if (gamestate.difficulty < gd_medium)
+        if (gamestate.difficulty < gd_medium) {
           break;
+        }
         tile -= 18;
       case 216:
       case 217:
@@ -579,15 +602,17 @@ static void ScanInfoPlane(void) {
       case 257:
       case 258:
       case 259:
-        if (gamestate.difficulty < gd_hard)
+        if (gamestate.difficulty < gd_hard) {
           break;
+        }
         tile -= 18;
       case 238:
       case 239:
       case 240:
       case 241:
-        if (gamestate.difficulty < gd_medium)
+        if (gamestate.difficulty < gd_medium) {
           break;
+        }
         tile -= 18;
       case 220:
       case 221:
@@ -643,10 +668,11 @@ void SetupGameLevel(void) {
     LastAttacker = NULL;
   }
 
-  if (demoplayback || demorecord)
+  if (demoplayback || demorecord) {
     US_InitRndT(false);
-  else
+  } else {
     US_InitRndT(true);
+  }
 
   //
   // load the level
@@ -749,14 +775,18 @@ void SetupGameLevel(void) {
       tile = *map;
 
       if (tile == AMBUSHTILE) {
-        if (VALIDAREA(*(map + 1)))
+        if (VALIDAREA(*(map + 1))) {
           tile = *map;
-        if (VALIDAREA(*(map - mapwidth)))
+        }
+        if (VALIDAREA(*(map - mapwidth))) {
           tile = *(map - mapwidth);
-        if (VALIDAREA(*(map + mapwidth)))
+        }
+        if (VALIDAREA(*(map + mapwidth))) {
           tile = *(map + mapwidth);
-        if (VALIDAREA(*(map - 1)))
+        }
+        if (VALIDAREA(*(map - 1))) {
           tile = *(map - 1);
+        }
 
         *map = tile;
       }
@@ -766,8 +796,9 @@ void SetupGameLevel(void) {
   }
 
 #if defined(USE_FEATUREFLAGS) && defined(USE_CLOUDSKY)
-  if (GetFeatureFlags() & FF_CLOUDSKY)
+  if (GetFeatureFlags() & FF_CLOUDSKY) {
     InitSky();
+  }
 #endif
 
 #ifdef USE_SHADING
@@ -804,8 +835,9 @@ void SetupGameLevel(void) {
 ===================
 */
 void DrawPlayBorderSides(void) {
-  if (viewsize == 21)
+  if (viewsize == 21) {
     return;
+  }
 
   const int sw = screenWidth;
   const int sh = screenHeight;
@@ -894,9 +926,9 @@ void DrawStatusBorder(byte color) {
 void DrawPlayBorder(void) {
   const int px = scaleFactor; // size of one "pixel"
 
-  if (bordercol != VIEWCOLOR)
+  if (bordercol != VIEWCOLOR) {
     DrawStatusBorder(bordercol);
-  else {
+  } else {
     const int statusborderw = (screenWidth - px * 320) / 2;
     VWB_BarScaledCoord(0, screenHeight - px * STATUSLINES,
                        statusborderw + px * 8, px * STATUSLINES, bordercol);
@@ -905,8 +937,9 @@ void DrawPlayBorder(void) {
                        px * STATUSLINES, bordercol);
   }
 
-  if (viewheight == screenHeight)
+  if (viewheight == screenHeight) {
     return;
+  }
 
   VWB_BarScaledCoord(0, 0, screenWidth, screenHeight - px * STATUSLINES,
                      bordercol);
@@ -1077,14 +1110,16 @@ void RecordDemo(void) {
   VW_UpdateScreen();
   VW_FadeIn();
   esc = !US_LineInput(px, py, str, NULL, true, 2, 0);
-  if (esc)
+  if (esc) {
     return;
+  }
 
   level = atoi(str);
   level--;
 
-  if (level >= maps || level < 0)
+  if (level >= maps || level < 0) {
     return;
+  }
 
   VW_FadeOut();
 
@@ -1218,14 +1253,16 @@ void Died(void) {
     dy = player->y - LastAttacker->y;
 
     fangle = (float)atan2((float)dy, (float)dx); // returns -pi to pi
-    if (fangle < 0)
+    if (fangle < 0) {
       fangle = (float)(M_PI * 2 + fangle);
+    }
 
     iangle = (int)(fangle / (M_PI * 2) * ANGLES);
   } else {
     iangle = player->angle + ANGLES / 2;
-    if (iangle >= ANGLES)
+    if (iangle >= ANGLES) {
       iangle -= ANGLES;
+    }
   }
 
   if (player->angle > iangle) {
@@ -1242,17 +1279,20 @@ void Died(void) {
     //
     // rotate clockwise
     //
-    if (curangle > iangle)
+    if (curangle > iangle) {
       curangle -= ANGLES;
+    }
     do {
       change = tics * DEATHROTATE;
-      if (curangle + change > iangle)
+      if (curangle + change > iangle) {
         change = iangle - curangle;
+      }
 
       curangle += change;
       player->angle += change;
-      if (player->angle >= ANGLES)
+      if (player->angle >= ANGLES) {
         player->angle -= ANGLES;
+      }
 
       ThreeDRefresh();
       CalcTics();
@@ -1261,17 +1301,20 @@ void Died(void) {
     //
     // rotate counterclockwise
     //
-    if (curangle < iangle)
+    if (curangle < iangle) {
       curangle += ANGLES;
+    }
     do {
       change = -(int)tics * DEATHROTATE;
-      if (curangle + change < iangle)
+      if (curangle + change < iangle) {
         change = iangle - curangle;
+      }
 
       curangle += change;
       player->angle += change;
-      if (player->angle < 0)
+      if (player->angle < 0) {
         player->angle += ANGLES;
+      }
 
       ThreeDRefresh();
       CalcTics();
@@ -1338,14 +1381,17 @@ void GameLoop(void) {
   DrawPlayScreen();
   died = false;
   do {
-    if (!loadedgame)
+    if (!loadedgame) {
       gamestate.score = gamestate.oldscore;
-    if (!died || viewsize != 21)
+    }
+    if (!died || viewsize != 21) {
       DrawScore();
+    }
 
     startgame = false;
-    if (!loadedgame)
+    if (!loadedgame) {
       SetupGameLevel();
+    }
 
 #ifdef SPEAR
     if (gamestate.mapon == 20) // give them the key allways
@@ -1361,12 +1407,13 @@ void GameLoop(void) {
     if (loadedgame) {
       ContinueMusic(lastgamemusicoffset);
       loadedgame = false;
-    } else
+    } else {
       StartMusic();
+    }
 
-    if (!died)
+    if (!died) {
       PreloadGraphics(); // TODO: Let this do something useful!
-    else {
+    } else {
       died = false;
       fizzlein = true;
     }
@@ -1382,8 +1429,9 @@ void GameLoop(void) {
       SD_PlaySound(GETSPEARSND);
       if (DigiMode != sds_Off) {
         Delay(150);
-      } else
+      } else {
         SD_WaitSoundDone();
+      }
 
       ClearMemory();
       gamestate.oldscore = gamestate.score;
@@ -1402,8 +1450,9 @@ void GameLoop(void) {
     StopMusic();
     ingame = false;
 
-    if (demorecord && playstate != ex_warped)
+    if (demorecord && playstate != ex_warped) {
       FinishDemoRecord();
+    }
 
     if (startgame || loadedgame) {
       ClearMemory();
@@ -1417,8 +1466,9 @@ void GameLoop(void) {
     switch (playstate) {
     case ex_completed:
     case ex_secretlevel:
-      if (viewsize == 21)
+      if (viewsize == 21) {
         DrawPlayScreen();
+      }
       gamestate.keys = 0;
       DrawKeys();
       VW_FadeOut();
@@ -1426,8 +1476,9 @@ void GameLoop(void) {
       ClearMemory();
 
       LevelCompleted(); // do the intermission
-      if (viewsize == 21)
+      if (viewsize == 21) {
         DrawPlayScreen();
+      }
 
 #ifdef SPEARDEMO
       if (gamestate.mapon == 1) {
@@ -1471,14 +1522,15 @@ void GameLoop(void) {
       //
       // COMING BACK FROM SECRET LEVEL
       //
-      if (gamestate.mapon == 9)
+      if (gamestate.mapon == 9) {
         gamestate.mapon = ElevatorBackTo[gamestate.episode]; // back from secret
-      else
+      } else
         //
         // GOING TO SECRET LEVEL
         //
-        if (playstate == ex_secretlevel)
+        if (playstate == ex_secretlevel) {
           gamestate.mapon = 9;
+        }
 #else
 
 #define FROMSECRET1 3
@@ -1487,7 +1539,7 @@ void GameLoop(void) {
       //
       // GOING TO SECRET LEVEL
       //
-      if (playstate == ex_secretlevel)
+      if (playstate == ex_secretlevel) {
         switch (gamestate.mapon) {
         case FROMSECRET1:
           gamestate.mapon = 18;
@@ -1496,11 +1548,11 @@ void GameLoop(void) {
           gamestate.mapon = 19;
           break;
         }
-      else
+      } else
         //
         // COMING BACK FROM SECRET LEVEL
         //
-        if (gamestate.mapon == 18 || gamestate.mapon == 19)
+        if (gamestate.mapon == 18 || gamestate.mapon == 19) {
           switch (gamestate.mapon) {
           case 18:
             gamestate.mapon = FROMSECRET1 + 1;
@@ -1509,28 +1561,28 @@ void GameLoop(void) {
             gamestate.mapon = FROMSECRET2 + 1;
             break;
           }
+        }
 #endif
-        else
+        else {
           //
           // GOING TO NEXT LEVEL
           //
           gamestate.mapon++;
+        }
       break;
 
     case ex_died:
       Died();
       died = true; // don't "get psyched!"
 
-      if (gamestate.lives > -1)
+      if (gamestate.lives > -1) {
         break; // more lives left
+      }
 
       VW_FadeOut();
-      if (screenHeight % 200 != 0)
+      if (screenHeight % 200 != 0) {
         VL_ClearScreen(0);
-
-#ifdef _arch_dreamcast
-      DC_StatusClearLCD();
-#endif
+      }
 
       ClearMemory();
 
@@ -1543,8 +1595,9 @@ void GameLoop(void) {
       return;
 
     case ex_victorious:
-      if (viewsize == 21)
+      if (viewsize == 21) {
         DrawPlayScreen();
+      }
 #ifndef SPEAR
       VW_FadeOut();
 #else
@@ -1565,8 +1618,9 @@ void GameLoop(void) {
       return;
 
     default:
-      if (viewsize == 21)
+      if (viewsize == 21) {
         DrawPlayScreen();
+      }
       ClearMemory();
       break;
     }

@@ -55,22 +55,14 @@ int dirscan[4] = {sc_UpArrow, sc_RightArrow, sc_DownArrow, sc_LeftArrow};
 int buttonscan[NUMBUTTONS] = {sc_Control, sc_Alt, sc_LShift, sc_Space,
                               sc_1,       sc_2,   sc_3,      sc_4};
 int buttonmouse[4] = {bt_attack, bt_strafe, bt_use, bt_nobutton};
-int buttonjoy[32] = {
-#ifdef _arch_dreamcast
-    bt_attack,   bt_strafe,     bt_use,         bt_run,
-    bt_esc,      bt_prevweapon, bt_nobutton,    bt_nextweapon,
-    bt_pause,    bt_strafeleft, bt_straferight, bt_nobutton,
-    bt_nobutton, bt_nobutton,   bt_nobutton,    bt_nobutton,
-#else
-    bt_attack,     bt_strafe,      bt_use,      bt_run,
-    bt_strafeleft, bt_straferight, bt_esc,      bt_pause,
-    bt_prevweapon, bt_nextweapon,  bt_nobutton, bt_nobutton,
-    bt_nobutton,   bt_nobutton,    bt_nobutton, bt_nobutton,
-#endif
-    bt_nobutton, bt_nobutton,   bt_nobutton,    bt_nobutton,
-    bt_nobutton, bt_nobutton,   bt_nobutton,    bt_nobutton,
-    bt_nobutton, bt_nobutton,   bt_nobutton,    bt_nobutton,
-    bt_nobutton, bt_nobutton,   bt_nobutton,    bt_nobutton};
+int buttonjoy[32] = {bt_attack,     bt_strafe,      bt_use,      bt_run,
+                     bt_strafeleft, bt_straferight, bt_esc,      bt_pause,
+                     bt_prevweapon, bt_nextweapon,  bt_nobutton, bt_nobutton,
+                     bt_nobutton,   bt_nobutton,    bt_nobutton, bt_nobutton,
+                     bt_nobutton,   bt_nobutton,    bt_nobutton, bt_nobutton,
+                     bt_nobutton,   bt_nobutton,    bt_nobutton, bt_nobutton,
+                     bt_nobutton,   bt_nobutton,    bt_nobutton, bt_nobutton,
+                     bt_nobutton,   bt_nobutton,    bt_nobutton, bt_nobutton};
 
 int viewsize;
 
@@ -206,9 +198,11 @@ int songs[] = {
 void PollKeyboardButtons(void) {
   int i;
 
-  for (i = 0; i < NUMBUTTONS; i++)
-    if (Keyboard[buttonscan[i]])
+  for (i = 0; i < NUMBUTTONS; i++) {
+    if (Keyboard[buttonscan[i]]) {
       buttonstate[i] = true;
+    }
+  }
 }
 
 /*
@@ -222,12 +216,15 @@ void PollKeyboardButtons(void) {
 void PollMouseButtons(void) {
   int buttons = IN_MouseButtons();
 
-  if (buttons & 1)
+  if (buttons & 1) {
     buttonstate[buttonmouse[0]] = true;
-  if (buttons & 2)
+  }
+  if (buttons & 2) {
     buttonstate[buttonmouse[1]] = true;
-  if (buttons & 4)
+  }
+  if (buttons & 4) {
     buttonstate[buttonmouse[2]] = true;
+  }
 }
 
 /*
@@ -242,8 +239,9 @@ void PollJoystickButtons(void) {
   int i, val, buttons = IN_JoyButtons();
 
   for (i = 0, val = 1; i < JoyNumButtons; i++, val <<= 1) {
-    if (buttons & val)
+    if (buttons & val) {
       buttonstate[buttonjoy[i]] = true;
+    }
   }
 }
 
@@ -258,14 +256,18 @@ void PollJoystickButtons(void) {
 void PollKeyboardMove(void) {
   int delta = buttonstate[bt_run] ? RUNMOVE * tics : BASEMOVE * tics;
 
-  if (Keyboard[dirscan[di_north]])
+  if (Keyboard[dirscan[di_north]]) {
     controly -= delta;
-  if (Keyboard[dirscan[di_south]])
+  }
+  if (Keyboard[dirscan[di_south]]) {
     controly += delta;
-  if (Keyboard[dirscan[di_west]])
+  }
+  if (Keyboard[dirscan[di_west]]) {
     controlx -= delta;
-  if (Keyboard[dirscan[di_east]])
+  }
+  if (Keyboard[dirscan[di_east]]) {
     controlx += delta;
+  }
 }
 
 /*
@@ -300,14 +302,16 @@ void PollJoystickMove(void) {
 
   int delta = buttonstate[bt_run] ? RUNMOVE * tics : BASEMOVE * tics;
 
-  if (joyx > 64 || buttonstate[bt_turnright])
+  if (joyx > 64 || buttonstate[bt_turnright]) {
     controlx += delta;
-  else if (joyx < -64 || buttonstate[bt_turnleft])
+  } else if (joyx < -64 || buttonstate[bt_turnleft]) {
     controlx -= delta;
-  if (joyy > 64 || buttonstate[bt_movebackward])
+  }
+  if (joyy > 64 || buttonstate[bt_movebackward]) {
     controly += delta;
-  else if (joyy < -64 || buttonstate[bt_moveforward])
+  } else if (joyy < -64 || buttonstate[bt_moveforward]) {
     controly -= delta;
+  }
 }
 
 /*
@@ -341,15 +345,18 @@ void PollControls(void) {
     uint32_t curtime = SDL_GetTicks();
     lasttimecount += DEMOTICS;
     int32_t timediff = (lasttimecount * 100) / 7 - curtime;
-    if (timediff > 0)
+    if (timediff > 0) {
       SDL_Delay(timediff);
+    }
 
-    if (timediff < -2 * DEMOTICS)          // more than 2-times DEMOTICS behind?
+    if (timediff < -2 * DEMOTICS) {        // more than 2-times DEMOTICS behind?
       lasttimecount = (curtime * 7) / 100; // yes, set to current timecount
+    }
 
     tics = DEMOTICS;
-  } else
+  } else {
     CalcTics();
+  }
 
   controlx = 0;
   controly = 0;
@@ -369,8 +376,9 @@ void PollControls(void) {
     controlx = *demoptr++;
     controly = *demoptr++;
 
-    if (demoptr == lastdemoptr)
+    if (demoptr == lastdemoptr) {
       playstate = ex_completed; // demo is done
+    }
 
     controlx *= (int)tics;
     controly *= (int)tics;
@@ -383,37 +391,43 @@ void PollControls(void) {
   //
   PollKeyboardButtons();
 
-  if (mouseenabled && GrabInput)
+  if (mouseenabled && GrabInput) {
     PollMouseButtons();
+  }
 
-  if (joystickenabled)
+  if (joystickenabled) {
     PollJoystickButtons();
+  }
 
   //
   // get movements
   //
   PollKeyboardMove();
 
-  if (mouseenabled && GrabInput)
+  if (mouseenabled && GrabInput) {
     PollMouseMove();
+  }
 
-  if (joystickenabled)
+  if (joystickenabled) {
     PollJoystickMove();
+  }
 
   //
   // bound movement to a maximum
   //
   max = 100 * tics;
   min = -max;
-  if (controlx > max)
+  if (controlx > max) {
     controlx = max;
-  else if (controlx < min)
+  } else if (controlx < min) {
     controlx = min;
+  }
 
-  if (controly > max)
+  if (controly > max) {
     controly = max;
-  else if (controly < min)
+  } else if (controly < min) {
     controly = min;
+  }
 
   if (demorecord) {
     //
@@ -427,17 +441,18 @@ void PollControls(void) {
     // TODO: Support 32-bit buttonbits
     for (i = NUMBUTTONS - 1; i >= 0; i--) {
       buttonbits <<= 1;
-      if (buttonstate[i])
+      if (buttonstate[i]) {
         buttonbits |= 1;
+      }
     }
 
     *demoptr++ = buttonbits;
     *demoptr++ = controlx;
     *demoptr++ = controly;
 
-    if (demoptr >= lastdemoptr - 8)
+    if (demoptr >= lastdemoptr - 8) {
       playstate = ex_completed;
-    else {
+    } else {
       controlx *= (int)tics;
       controly *= (int)tics;
     }
@@ -472,8 +487,9 @@ void CenterWindow(word w, word h) {
 void CheckKeys(void) {
   ScanCode scan;
 
-  if (screenfaded || demoplayback) // don't do anything with a faded screen
+  if (screenfaded || demoplayback) { // don't do anything with a faded screen
     return;
+  }
 
   scan = LastScan;
 
@@ -524,8 +540,9 @@ void CheckKeys(void) {
     IN_ClearKeysDown();
     IN_Ack();
 
-    if (viewsize < 17)
+    if (viewsize < 17) {
       DrawPlayBorder();
+    }
   }
 
   //
@@ -561,15 +578,17 @@ void CheckKeys(void) {
     IN_ClearKeysDown();
     IN_Ack();
 
-    if (viewsize < 18)
+    if (viewsize < 18) {
       DrawPlayBorder();
+    }
   }
 
   //
   // pause key weirdness can't be checked as a scan code
   //
-  if (buttonstate[bt_pause])
+  if (buttonstate[bt_pause]) {
     Paused = true;
+  }
   if (Paused) {
     int lastoffs = StopMusic();
     VWB_DrawPic(16 * 8, 80 - 2 * 8, PAUSEDPIC);
@@ -613,12 +632,15 @@ void CheckKeys(void) {
     SETFONTCOLOR(0, 15);
     IN_ClearKeysDown();
     VW_FadeOut();
-    if (viewsize != 21)
+    if (viewsize != 21) {
       DrawPlayScreen();
-    if (!startgame && !loadedgame)
+    }
+    if (!startgame && !loadedgame) {
       ContinueMusic(lastoffs);
-    if (loadedgame)
+    }
+    if (loadedgame) {
       playstate = ex_abort;
+    }
     lasttimecount = GetTimeCount();
     IN_CenterMouse();
     return;
@@ -732,15 +754,17 @@ void InitActorList(void) {
 objtype *GetNewActor(void) {
   objtype *newobj = NULL;
 
-  if (!objfreelist)
+  if (!objfreelist) {
     Quit("GetNewActor: No free spots in objlist!");
+  }
 
   newobj = objfreelist;
   objfreelist = newobj->prev;
   memset(newobj, 0, sizeof(*newobj));
 
-  if (lastobj)
+  if (lastobj) {
     lastobj->next = newobj;
+  }
   newobj->prev = lastobj; // newobj->next is allready NULL from memset
 
   newobj->active = ac_no;
@@ -765,18 +789,20 @@ objtype *GetNewActor(void) {
 */
 
 void RemoveObj(objtype *gone) {
-  if (gone == player)
+  if (gone == player) {
     Quit("RemoveObj: Tried to remove the player!");
+  }
 
   gone->state = NULL;
 
   //
   // fix the next object's back link
   //
-  if (gone == lastobj)
+  if (gone == lastobj) {
     lastobj = gone->prev;
-  else
+  } else {
     gone->next->prev = gone->prev;
+  }
 
   //
   // fix the previous object's forward link
@@ -956,24 +982,30 @@ void UpdatePaletteShifts(void) {
 
   if (bonuscount) {
     white = bonuscount / WHITETICS + 1;
-    if (white > NUMWHITESHIFTS)
+    if (white > NUMWHITESHIFTS) {
       white = NUMWHITESHIFTS;
+    }
     bonuscount -= tics;
-    if (bonuscount < 0)
+    if (bonuscount < 0) {
       bonuscount = 0;
-  } else
+    }
+  } else {
     white = 0;
+  }
 
   if (damagecount) {
     red = damagecount / 10 + 1;
-    if (red > NUMREDSHIFTS)
+    if (red > NUMREDSHIFTS) {
       red = NUMREDSHIFTS;
+    }
 
     damagecount -= tics;
-    if (damagecount < 0)
+    if (damagecount < 0) {
       damagecount = 0;
-  } else
+    }
+  } else {
     red = 0;
+  }
 
   if (red) {
     VL_SetPalette(redshifts[red - 1], false);
@@ -1023,11 +1055,14 @@ void FinishPaletteShifts(void) {
 void DoActor(objtype *ob) {
   void (*think)(objtype *);
 
-  if (!ob->active && ob->areanumber < NUMAREAS && !areabyplayer[ob->areanumber])
+  if (!ob->active && ob->areanumber < NUMAREAS &&
+      !areabyplayer[ob->areanumber]) {
     return;
+  }
 
-  if (!(ob->flags & (FL_NONMARK | FL_NEVERMARK)))
+  if (!(ob->flags & (FL_NONMARK | FL_NEVERMARK))) {
     actorat[ob->tilex][ob->tiley] = NULL;
+  }
 
   //
   // non transitional object
@@ -1043,11 +1078,13 @@ void DoActor(objtype *ob) {
       }
     }
 
-    if (ob->flags & FL_NEVERMARK)
+    if (ob->flags & FL_NEVERMARK) {
       return;
+    }
 
-    if ((ob->flags & FL_NONMARK) && actorat[ob->tilex][ob->tiley])
+    if ((ob->flags & FL_NONMARK) && actorat[ob->tilex][ob->tiley]) {
       return;
+    }
 
     actorat[ob->tilex][ob->tiley] = ob;
     return;
@@ -1094,11 +1131,13 @@ void DoActor(objtype *ob) {
     }
   }
 
-  if (ob->flags & FL_NEVERMARK)
+  if (ob->flags & FL_NEVERMARK) {
     return;
+  }
 
-  if ((ob->flags & FL_NONMARK) && actorat[ob->tilex][ob->tiley])
+  if ((ob->flags & FL_NONMARK) && actorat[ob->tilex][ob->tiley]) {
     return;
+  }
 
   actorat[ob->tilex][ob->tiley] = ob;
 }
@@ -1128,8 +1167,9 @@ void PlayLoop(void) {
 
   IN_CenterMouse();
 
-  if (demoplayback)
+  if (demoplayback) {
     IN_StartAck();
+  }
 
   do {
     PollControls();
@@ -1142,8 +1182,9 @@ void PlayLoop(void) {
     MoveDoors();
     MovePWalls();
 
-    for (obj = player; obj; obj = obj->next)
+    for (obj = player; obj; obj = obj->next) {
       DoActor(obj);
+    }
 
     UpdatePaletteShifts();
 
@@ -1156,8 +1197,9 @@ void PlayLoop(void) {
     funnyticount += tics;
     if (funnyticount > 30l * 70) {
       funnyticount = 0;
-      if (viewsize != 21)
+      if (viewsize != 21) {
         StatusDrawFace(BJWAITING1PIC + (US_RndT() & 1));
+      }
       facecount = 0;
     }
 #endif
@@ -1165,8 +1207,9 @@ void PlayLoop(void) {
     gamestate.TimeCount += tics;
 
     UpdateSoundLoc(); // JAB
-    if (screenfaded)
+    if (screenfaded) {
       VW_FadeIn();
+    }
 
     CheckKeys();
 
@@ -1177,8 +1220,9 @@ void PlayLoop(void) {
       VW_WaitVBL(singlestep);
       lasttimecount = GetTimeCount();
     }
-    if (extravbls)
+    if (extravbls) {
       VW_WaitVBL(extravbls);
+    }
 
     if (demoplayback) {
       if (IN_CheckAck()) {
@@ -1188,6 +1232,7 @@ void PlayLoop(void) {
     }
   } while (!playstate && !startgame);
 
-  if (playstate != ex_died)
+  if (playstate != ex_died) {
     FinishPaletteShifts();
+  }
 }

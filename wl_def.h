@@ -25,23 +25,10 @@
 
 #pragma pack(1)
 
-#if defined(_arch_dreamcast)
-#define YESBUTTONNAME "A"
-#define NOBUTTONNAME "B"
-#define DEFAULT_AUDIO_BUFFER_SIZE 1024
-#elif defined(GP2X)
 #define YESBUTTONNAME "Y"
-#define NOBUTTONNAME "B"
-#define DEFAULT_AUDIO_BUFFER_SIZE 128
-#else
-#ifdef SPANISH
-#define YESBUTTONNAME "S"
-#else
-#define YESBUTTONNAME "Y"
-#endif
 #define NOBUTTONNAME "N"
+
 #define DEFAULT_AUDIO_BUFFER_SIZE 2048
-#endif
 
 #include "foreign.h"
 
@@ -1794,7 +1781,6 @@ extern void EndText(void);
 #define GetTicks() ((SDL_GetTicks() * 7) / 100)
 
 #define ISPOINTER(x) ((((uintptr_t)(x)) & ~0xffff) != 0)
-
 
 static inline char *itoa(int value, char *string, int radix) {
   int len = strlen(string) + 1;

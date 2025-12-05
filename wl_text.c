@@ -440,13 +440,8 @@ void PageLayout(boolean shownumber) {
   pagenum++;
 
   if (shownumber) {
-#ifdef SPANISH
-    snprintf(str, sizeof(str), "Hoja %d de %d", pagenum, numpages);
-    px = 208;
-#else
     snprintf(str, sizeof(str), "pg %d of %d", pagenum, numpages);
     px = 213;
-#endif
     py = 183;
     fontcolor = 0x4f; // 12^BACKCOLOR;
 

@@ -133,8 +133,9 @@ void Victory(void) {
   ClearSplitVWB();
 
   VWB_Bar(0, 0, 320, screenHeight / scaleFactor - STATUSLINES + 1, VIEWCOLOR);
-  if (bordercol != VIEWCOLOR)
+  if (bordercol != VIEWCOLOR) {
     DrawStatusBorder(VIEWCOLOR);
+  }
 
 #ifdef JAPAN
 #ifndef JAPDEMO
@@ -147,15 +148,9 @@ void Victory(void) {
 
   Write(12, RATIOY - 2, "averages");
 
-#ifdef SPANISH
-  Write(RATIOX + 2, RATIOY, STR_RATKILL);
-  Write(RATIOX + 2, RATIOY + 2, STR_RATSECRET);
-  Write(RATIOX + 2, RATIOY + 4, STR_RATTREASURE);
-#else
   Write(RATIOX + 8, RATIOY, STR_RATKILL);
   Write(RATIOX + 4, RATIOY + 2, STR_RATSECRET);
   Write(RATIOX, RATIOY + 4, STR_RATTREASURE);
-#endif
 
 #endif
 
@@ -183,8 +178,9 @@ void Victory(void) {
   min = sec / 60;
   sec %= 60;
 
-  if (min > 99)
+  if (min > 99) {
     min = sec = 99;
+  }
 
   i = TIMEX * 8 + 1;
   VWB_DrawPic(i, TIMEY * 8, L_NUM0PIC + (min / 10));
@@ -210,7 +206,6 @@ void Victory(void) {
   x = RATIOX + 24 - (int)strlen(tempstr) * 2;
   Write(x, RATIOY + 4, tempstr);
 
-#ifndef SPANISH
 #ifndef UPLOAD
 #ifndef SPEAR
   //
@@ -231,7 +226,6 @@ void Victory(void) {
   }
 #endif
 #endif
-#endif
 
   fontnumber = 1;
 
@@ -241,8 +235,9 @@ void Victory(void) {
   IN_Ack();
 
   VW_FadeOut();
-  if (screenHeight % 200 != 0)
+  if (screenHeight % 200 != 0) {
     VL_ClearScreen(0);
+  }
 
   MainMenu[savegame].active = 0; // ADDEDFIX 3 - Tricob
 
@@ -305,8 +300,9 @@ void Write(int x, int y, const char *string) {
     } else {
       ch = (byte)string[i];
 
-      if (!isupper(ch))
+      if (!isupper(ch)) {
         ch = toupper(ch);
+      }
 
       ch -= '0';
 
@@ -490,8 +486,9 @@ void LevelCompleted(void) {
   ClearSplitVWB(); // set up for double buffering in split screen
   VWB_Bar(0, 0, 320, screenHeight / scaleFactor - STATUSLINES + 1, VIEWCOLOR);
 
-  if (bordercol != VIEWCOLOR)
+  if (bordercol != VIEWCOLOR) {
     DrawStatusBorder(VIEWCOLOR);
+  }
 
   StartCPMusic(ENDLEVEL_MUS);
 
@@ -514,59 +511,45 @@ void LevelCompleted(void) {
 #endif
   {
 #ifndef JAPAN
-#ifdef SPANISH
-    Write(14, 2, "piso\ncompletado");
-#else
-    Write(14, 2, "floor\ncompleted");
-#endif
 
+    Write(14, 2, "floor\ncompleted");
     Write(14, 7, STR_BONUS "     0");
     Write(16, 10, STR_TIME);
     Write(16, 12, STR_PAR);
 
-#ifdef SPANISH
-    Write(11, 14, STR_RAT2KILL);
-    Write(11, 16, STR_RAT2SECRET);
-    Write(11, 18, STR_RAT2TREASURE);
-#else
     Write(9, 14, STR_RAT2KILL);
     Write(5, 16, STR_RAT2SECRET);
     Write(1, 18, STR_RAT2TREASURE);
-#endif
 
     Write(26, 2, itoa(gamestate.mapon + 1, tempstr, 10));
 #endif
 
-#ifdef SPANISH
-    Write(30, 12, parTimes[gamestate.episode * 10 + gamestate.mapon].timestr);
-#else
     Write(26, 12, parTimes[gamestate.episode * 10 + gamestate.mapon].timestr);
-#endif
 
     //
     // PRINT TIME
     //
     sec = gamestate.TimeCount / 70;
 
-    if (sec > 99 * 60) // 99 minutes max
+    if (sec > 99 * 60) { // 99 minutes max
       sec = 99 * 60;
+    }
 
     if (gamestate.TimeCount <
-        parTimes[gamestate.episode * 10 + gamestate.mapon].time * 4200)
+        parTimes[gamestate.episode * 10 + gamestate.mapon].time * 4200) {
       timeleft =
           (int32_t)((parTimes[gamestate.episode * 10 + gamestate.mapon].time *
                      4200) /
                         70 -
                     sec);
+    }
 
     min = sec / 60;
     sec %= 60;
 
-#ifdef SPANISH
-    i = 30 * 8;
-#else
+
     i = 26 * 8;
-#endif
+
     VWB_DrawPic(i, 10 * 8, L_NUM0PIC + (min / 10));
     i += 2 * 8;
     VWB_DrawPic(i, 10 * 8, L_NUM0PIC + (min % 10));
@@ -584,12 +567,15 @@ void LevelCompleted(void) {
     // FIGURE RATIOS OUT BEFOREHAND
     //
     kr = sr = tr = 0;
-    if (gamestate.killtotal)
+    if (gamestate.killtotal) {
       kr = (gamestate.killcount * 100) / gamestate.killtotal;
-    if (gamestate.secrettotal)
+    }
+    if (gamestate.secrettotal) {
       sr = (gamestate.secretcount * 100) / gamestate.secrettotal;
-    if (gamestate.treasuretotal)
+    }
+    if (gamestate.treasuretotal) {
       tr = (gamestate.treasurecount * 100) / gamestate.treasuretotal;
+    }
 
     //
     // PRINT TIME BONUS
@@ -600,27 +586,28 @@ void LevelCompleted(void) {
         ltoa((int32_t)i * PAR_AMOUNT, tempstr, 10);
         x = 36 - (int)strlen(tempstr) * 2;
         Write(x, 7, tempstr);
-        if (!(i % (PAR_AMOUNT / 10)))
+        if (!(i % (PAR_AMOUNT / 10))) {
           SD_PlaySound(ENDBONUS1SND);
+        }
         VW_UpdateScreen();
-        while (SD_SoundPlaying())
+        while (SD_SoundPlaying()) {
           BJ_Breathe();
-        if (IN_CheckAck())
+        }
+        if (IN_CheckAck()) {
           goto done;
+        }
       }
 
       VW_UpdateScreen();
 
       SD_PlaySound(ENDBONUS2SND);
-      while (SD_SoundPlaying())
+      while (SD_SoundPlaying()) {
         BJ_Breathe();
+      }
     }
 
-#ifdef SPANISH
-#define RATIOXX 33
-#else
+
 #define RATIOXX 37
-#endif
     //
     // KILL RATIO
     //
@@ -629,14 +616,17 @@ void LevelCompleted(void) {
       itoa(i, tempstr, 10);
       x = RATIOXX - (int)strlen(tempstr) * 2;
       Write(x, 14, tempstr);
-      if (!(i % 10))
+      if (!(i % 10)) {
         SD_PlaySound(ENDBONUS1SND);
+      }
       VW_UpdateScreen();
-      while (SD_SoundPlaying())
+      while (SD_SoundPlaying()) {
         BJ_Breathe();
+      }
 
-      if (IN_CheckAck())
+      if (IN_CheckAck()) {
         goto done;
+      }
     }
     if (ratio >= 100) {
       VW_WaitVBL(VBLWAIT);
@@ -651,12 +641,14 @@ void LevelCompleted(void) {
       VW_WaitVBL(VBLWAIT);
       SD_StopSound();
       SD_PlaySound(NOBONUSSND);
-    } else
+    } else {
       SD_PlaySound(ENDBONUS2SND);
+    }
 
     VW_UpdateScreen();
-    while (SD_SoundPlaying())
+    while (SD_SoundPlaying()) {
       BJ_Breathe();
+    }
 
     //
     // SECRET RATIO
@@ -666,14 +658,17 @@ void LevelCompleted(void) {
       itoa(i, tempstr, 10);
       x = RATIOXX - (int)strlen(tempstr) * 2;
       Write(x, 16, tempstr);
-      if (!(i % 10))
+      if (!(i % 10)) {
         SD_PlaySound(ENDBONUS1SND);
+      }
       VW_UpdateScreen();
-      while (SD_SoundPlaying())
+      while (SD_SoundPlaying()) {
         BJ_Breathe();
+      }
 
-      if (IN_CheckAck())
+      if (IN_CheckAck()) {
         goto done;
+      }
     }
     if (ratio >= 100) {
       VW_WaitVBL(VBLWAIT);
@@ -688,11 +683,13 @@ void LevelCompleted(void) {
       VW_WaitVBL(VBLWAIT);
       SD_StopSound();
       SD_PlaySound(NOBONUSSND);
-    } else
+    } else {
       SD_PlaySound(ENDBONUS2SND);
+    }
     VW_UpdateScreen();
-    while (SD_SoundPlaying())
+    while (SD_SoundPlaying()) {
       BJ_Breathe();
+    }
 
     //
     // TREASURE RATIO
@@ -702,13 +699,16 @@ void LevelCompleted(void) {
       itoa(i, tempstr, 10);
       x = RATIOXX - (int)strlen(tempstr) * 2;
       Write(x, 18, tempstr);
-      if (!(i % 10))
+      if (!(i % 10)) {
         SD_PlaySound(ENDBONUS1SND);
+      }
       VW_UpdateScreen();
-      while (SD_SoundPlaying())
+      while (SD_SoundPlaying()) {
         BJ_Breathe();
-      if (IN_CheckAck())
+      }
+      if (IN_CheckAck()) {
         goto done;
+      }
     }
     if (ratio >= 100) {
       VW_WaitVBL(VBLWAIT);
@@ -723,11 +723,13 @@ void LevelCompleted(void) {
       VW_WaitVBL(VBLWAIT);
       SD_StopSound();
       SD_PlaySound(NOBONUSSND);
-    } else
+    } else {
       SD_PlaySound(ENDBONUS2SND);
+    }
     VW_UpdateScreen();
-    while (SD_SoundPlaying())
+    while (SD_SoundPlaying()) {
       BJ_Breathe();
+    }
 
     //
     // JUMP STRAIGHT HERE IF KEY PRESSED
@@ -813,8 +815,9 @@ void LevelCompleted(void) {
 
   lastBreathTime = GetTimeCount();
   IN_StartAck();
-  while (!IN_CheckAck())
+  while (!IN_CheckAck()) {
     BJ_Breathe();
+  }
 
 //
 // done
@@ -984,8 +987,9 @@ void DrawHighScores(void) {
     //
     itoa(s->completed, buffer, 10);
 #ifndef SPEAR
-    for (str = buffer; *str; str++)
+    for (str = buffer; *str; str++) {
       *str = *str + (129 - '0'); // Used fixed-width numbers (129...)
+    }
     USL_MeasureString(buffer, &w, &h);
     PrintX = (22 * 8) - w;
 #else
@@ -1004,9 +1008,9 @@ void DrawHighScores(void) {
 #endif
 
 #ifdef SPEAR
-    if (s->completed == 21)
+    if (s->completed == 21) {
       VWB_DrawPic(PrintX + 8, PrintY - 1, C_WONSPEARPIC);
-    else
+    } else
 #endif
       US_Print(buffer);
 
@@ -1015,8 +1019,9 @@ void DrawHighScores(void) {
     //
     itoa(s->score, buffer, 10);
 #ifndef SPEAR
-    for (str = buffer; *str; str++)
+    for (str = buffer; *str; str++) {
       *str = *str + (129 - '0'); // Used fixed-width numbers (129...)
+    }
     USL_MeasureString(buffer, &w, &h);
     PrintX = (34 * 8) - 8 - w;
 #else
@@ -1083,8 +1088,9 @@ void CheckHighScore(int32_t score, word other) {
     if ((myscore.score > Scores[i].score) ||
         ((myscore.score == Scores[i].score) &&
          (myscore.completed > Scores[i].completed))) {
-      for (j = MaxScores; --j > i;)
+      for (j = MaxScores; --j > i;) {
         Scores[j] = Scores[j - 1];
+      }
       Scores[i] = myscore;
       n = i;
       break;
@@ -1145,24 +1151,16 @@ void NonShareware(void) {
   PrintX = 110;
   PrintY = 15;
 
-#ifdef SPANISH
-  US_Print("Atencion");
-#else
   US_Print("Attention");
-#endif
 
   SETFONTCOLOR(HIGHLIGHT, BKGDCOLOR);
   WindowX = PrintX = 40;
   PrintY = 60;
-#ifdef SPANISH
-  US_Print("Este juego NO es gratis y\n");
-  US_Print("NO es Shareware; favor de\n");
-  US_Print("no distribuirlo.\n\n");
-#else
+
   US_Print("This game is NOT shareware.\n");
   US_Print("Please do not distribute it.\n");
   US_Print("Thanks.\n\n");
-#endif
+
   US_Print("        Id Software\n");
 
   VW_UpdateScreen();

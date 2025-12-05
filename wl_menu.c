@@ -57,11 +57,7 @@ CP_itemtype MainMenu[] = {
 #ifndef GOODTIMES
 #ifndef SPEAR
 
-#ifdef SPANISH
-    {2, "Ve esto!", CP_ReadThis},
-#else
     {2, "Read This!", CP_ReadThis},
-#endif
 
 #endif
 #endif
@@ -133,37 +129,7 @@ CP_itemtype NewEmenu[] = {
     {1, "", 0}, {0, "", 0}
 #endif
 #else
-#ifdef SPANISH
-    {1,
-     "Episodio 1\n"
-     "Fuga desde Wolfenstein",
-     0},
-    {0, "", 0},
-    {3,
-     "Episodio 2\n"
-     "Operacion Eisenfaust",
-     0},
-    {0, "", 0},
-    {3,
-     "Episodio 3\n"
-     "Muere, Fuhrer, Muere!",
-     0},
-    {0, "", 0},
-    {3,
-     "Episodio 4\n"
-     "Un Negro Secreto",
-     0},
-    {0, "", 0},
-    {3,
-     "Episodio 5\n"
-     "Huellas del Loco",
-     0},
-    {0, "", 0},
-    {3,
-     "Episodio 6\n"
-     "Confrontacion",
-     0}
-#else
+
     {1,
      "Episode 1\n"
      "Escape from Wolfenstein",
@@ -193,7 +159,6 @@ CP_itemtype NewEmenu[] = {
      "Episode 6\n"
      "Confrontation",
      0}
-#endif
 #endif
 };
 #endif
@@ -322,16 +287,14 @@ static const char *ScanNames[] = {
 void US_ControlPanel(ScanCode scancode) {
   int which;
 
-#ifdef _arch_dreamcast
-  DC_StatusClearLCD();
-#endif
-
   if (ingame) {
-    if (CP_CheckQuick(scancode))
+    if (CP_CheckQuick(scancode)) {
       return;
+    }
     lastgamemusicoffset = StartCPMusic(MENUSONG);
-  } else
+  } else {
     StartCPMusic(MENUSONG);
+  }
   SetupControlPanel();
 
   //
@@ -402,8 +365,9 @@ void US_ControlPanel(ScanCode scancode) {
       VL_ConvertPalette(grsegs[IDGUYSPALETTE], pal, 256);
       VL_FadeIn(0, 255, pal, 30);
 
-      while (Keyboard[sc_I] || Keyboard[sc_D])
+      while (Keyboard[sc_I] || Keyboard[sc_D]) {
         IN_WaitAndProcessEvents();
+      }
       IN_ClearKeysDown();
       IN_Ack();
 
@@ -419,8 +383,9 @@ void US_ControlPanel(ScanCode scancode) {
     switch (which) {
     case viewscores:
       if (MainMenu[viewscores].routine == NULL) {
-        if (CP_EndGame(0))
+        if (CP_EndGame(0)) {
           StartGame = 1;
+        }
       } else {
         DrawMainMenu();
         MenuFadeIn();
@@ -429,8 +394,9 @@ void US_ControlPanel(ScanCode scancode) {
 
     case backtodemo:
       StartGame = 1;
-      if (!ingame)
+      if (!ingame) {
         StartCPMusic(INTROSONG);
+      }
       VL_FadeOut(0, 255, 0, 0, 0, 10);
       break;
 
@@ -459,8 +425,9 @@ void US_ControlPanel(ScanCode scancode) {
   //
   // CHANGE MAINMENU ITEM
   //
-  if (startgame || loadedgame)
+  if (startgame || loadedgame) {
     EnableEndGameMenuItem();
+  }
 }
 
 void EnableEndGameMenuItem() {
@@ -485,11 +452,7 @@ void DrawMainMenu(void) {
   DrawStripes(10);
   VWB_DrawPic(84, 0, C_OPTIONSPIC);
 
-#ifdef SPANISH
-  DrawWindow(MENU_X - 8, MENU_Y - 3, MENU_W + 8, MENU_H, BKGDCOLOR);
-#else
   DrawWindow(MENU_X - 8, MENU_Y - 3, MENU_W, MENU_H, BKGDCOLOR);
-#endif
 #endif
 
   //
@@ -576,8 +539,9 @@ void BossKey(void) {
 
       i ^= 1;
       lastBlinkTime = GetTimeCount();
-    } else
+    } else {
       SDL_Delay(5);
+    }
 
   } while (LastScan != sc_Escape);
 
@@ -624,8 +588,9 @@ int CP_CheckQuick(ScanCode scancode) {
       fontnumber = 0;
     } else {
       VW_FadeOut();
-      if (screenHeight % 200 != 0)
+      if (screenHeight % 200 != 0) {
         VL_ClearScreen(0);
+      }
 
       lastgamemusicoffset = StartCPMusic(MENUSONG);
       pickquick = CP_SaveGame(0);
@@ -633,14 +598,17 @@ int CP_CheckQuick(ScanCode scancode) {
       SETFONTCOLOR(0, 15);
       IN_ClearKeysDown();
       VW_FadeOut();
-      if (viewsize != 21)
+      if (viewsize != 21) {
         DrawPlayScreen();
+      }
 
-      if (!startgame && !loadedgame)
+      if (!startgame && !loadedgame) {
         ContinueMusic(lastgamemusicoffset);
+      }
 
-      if (loadedgame)
+      if (loadedgame) {
         playstate = ex_abort;
+      }
       lasttimecount = GetTimeCount();
 
       IN_CenterMouse();
@@ -657,14 +625,16 @@ int CP_CheckQuick(ScanCode scancode) {
       snprintf(str, sizeof(str), STR_LGC "%s\"?",
                SaveGameNames[LSItems.curpos]);
 
-      if (Confirm(str))
+      if (Confirm(str)) {
         CP_LoadGame(1);
+      }
 
       fontnumber = 0;
     } else {
       VW_FadeOut();
-      if (screenHeight % 200 != 0)
+      if (screenHeight % 200 != 0) {
         VL_ClearScreen(0);
+      }
 
       lastgamemusicoffset = StartCPMusic(MENUSONG);
       pickquick = CP_LoadGame(0); // loads lastgamemusicoffs
@@ -672,14 +642,17 @@ int CP_CheckQuick(ScanCode scancode) {
       SETFONTCOLOR(0, 15);
       IN_ClearKeysDown();
       VW_FadeOut();
-      if (viewsize != 21)
+      if (viewsize != 21) {
         DrawPlayScreen();
+      }
 
-      if (!startgame && !loadedgame)
+      if (!startgame && !loadedgame) {
         ContinueMusic(lastgamemusicoffset);
+      }
 
-      if (loadedgame)
+      if (loadedgame) {
         playstate = ex_abort;
+      }
 
       lasttimecount = GetTimeCount();
 
@@ -694,16 +667,7 @@ int CP_CheckQuick(ScanCode scancode) {
     WindowX = WindowY = 0;
     WindowW = 320;
     WindowH = 160;
-#ifdef JAPAN
-    if (GetYorN(7, 8, C_QUITMSGPIC))
-#else
-#ifdef SPANISH
-    if (Confirm(ENDGAMESTR))
-#else
-    if (Confirm(endStrings[(US_RndT() & 0x7) + (US_RndT() & 1)]))
-#endif
-#endif
-    {
+    if (Confirm(endStrings[(US_RndT() & 0x7) + (US_RndT() & 1)])) {
       VW_UpdateScreen();
       SD_MusicOff();
       SD_StopSound();
@@ -734,8 +698,9 @@ int CP_EndGame(int blank) {
   res = Confirm(ENDGAMESTR);
 #endif
   DrawMainMenu();
-  if (!res)
+  if (!res) {
     return 0;
+  }
 
   pickquick = gamestate.lives = 0;
   playstate = ex_died;
@@ -842,12 +807,13 @@ firstpart:
   // ALREADY IN A GAME?
   //
   DrawNewGame();
-  if (ingame)
+  if (ingame) {
     if (!Confirm(CURGAME)) {
       MenuFadeOut();
 
       return 0;
     }
+  }
 
 #endif
 
@@ -899,18 +865,15 @@ void DrawNewEpisode(void) {
   SETFONTCOLOR(READHCOLOR, BKGDCOLOR);
   PrintY = 2;
   WindowX = 0;
-#ifdef SPANISH
-  US_CPrint("Cual episodio jugar?");
-#else
   US_CPrint("Which episode to play?");
-#endif
 #endif
 
   SETFONTCOLOR(TEXTCOLOR, BKGDCOLOR);
   DrawMenu(&NewEitems, &NewEmenu[0]);
 
-  for (i = 0; i < 6; i++)
+  for (i = 0; i < 6; i++) {
     VWB_DrawPic(NE_X + 32, NE_Y + i * 26, C_EPISODE1PIC + i);
+  }
 
   VW_UpdateScreen();
   MenuFadeIn();
@@ -934,11 +897,7 @@ void DrawNewGame(void) {
   PrintY = NM_Y - 32;
 
 #ifndef SPEAR
-#ifdef SPANISH
-  US_Print("Eres macho?");
-#else
   US_Print("How tough are you?");
-#endif
 #else
   VWB_DrawPic(PrintX, PrintY, C_HOWTOUGHPIC);
 #endif
@@ -1087,11 +1046,13 @@ void DrawSoundMenu(void) {
     SndMenu[2].active = SndMenu[10].active = SndMenu[11].active = 0;
   }
 
-  if (!SoundBlasterPresent)
+  if (!SoundBlasterPresent) {
     SndMenu[7].active = 0;
+  }
 
-  if (!SoundBlasterPresent)
+  if (!SoundBlasterPresent) {
     SndMenu[5].active = 0;
+  }
 
   DrawMenu(&SndItems, &SndMenu[0]);
 #ifndef JAPAN
@@ -1116,51 +1077,59 @@ void DrawSoundMenu(void) {
         // SOUND EFFECTS
         //
       case 0:
-        if (SoundMode == sdm_Off)
+        if (SoundMode == sdm_Off) {
           on = 1;
+        }
         break;
       case 1:
-        if (SoundMode == sdm_PC)
+        if (SoundMode == sdm_PC) {
           on = 1;
+        }
         break;
       case 2:
-        if (SoundMode == sdm_AdLib)
+        if (SoundMode == sdm_AdLib) {
           on = 1;
+        }
         break;
 
         //
         // DIGITIZED SOUND
         //
       case 5:
-        if (DigiMode == sds_Off)
+        if (DigiMode == sds_Off) {
           on = 1;
+        }
         break;
       case 6:
         //                    if (DigiMode == sds_SoundSource)
         //                        on = 1;
         break;
       case 7:
-        if (DigiMode == sds_SoundBlaster)
+        if (DigiMode == sds_SoundBlaster) {
           on = 1;
+        }
         break;
 
         //
         // MUSIC
         //
       case 10:
-        if (MusicMode == smm_Off)
+        if (MusicMode == smm_Off) {
           on = 1;
+        }
         break;
       case 11:
-        if (MusicMode == smm_AdLib)
+        if (MusicMode == smm_AdLib) {
           on = 1;
+        }
         break;
       }
 
-      if (on)
+      if (on) {
         VWB_DrawPic(SM_X + 24, SM_Y1 + i * 13 + 2, C_SELECTEDPIC);
-      else
+      } else {
         VWB_DrawPic(SM_X + 24, SM_Y1 + i * 13 + 2, C_NOTSELECTEDPIC);
+      }
     }
 
   DrawMenuGun(&SndItems);
@@ -1185,10 +1154,11 @@ void DrawLSAction(int which) {
   PrintX = LSA_X + 46;
   PrintY = LSA_Y + 13;
 
-  if (!which)
+  if (!which) {
     US_Print(STR_LOADING "...");
-  else
+  } else {
     US_Print(STR_SAVING "...");
+  }
 
   VW_UpdateScreen();
 }
@@ -1215,14 +1185,11 @@ int CP_LoadGame(int quick) {
     if (SaveGamesAvail[which]) {
       name[7] = which + '0';
 
-#ifdef _arch_dreamcast
-      DC_LoadFromVMU(name);
-#endif
-
-      if (configdir[0])
+      if (configdir[0]) {
         snprintf(loadpath, sizeof(loadpath), "%s/%s", configdir, name);
-      else
+      } else {
         snprintf(loadpath, sizeof(loadpath), "%s", name);
+      }
 
       file = fopen(loadpath, "rb");
       fseek(file, 32, SEEK_SET);
@@ -1252,14 +1219,11 @@ int CP_LoadGame(int quick) {
       ShootSnd();
       name[7] = which + '0';
 
-#ifdef _arch_dreamcast
-      DC_LoadFromVMU(name);
-#endif
-
-      if (configdir[0])
+      if (configdir[0]) {
         snprintf(loadpath, sizeof(loadpath), "%s/%s", configdir, name);
-      else
+      } else {
         snprintf(loadpath, sizeof(loadpath), "%s", name);
+      }
 
       file = fopen(loadpath, "rb");
       fseek(file, 32, SEEK_SET);
@@ -1322,13 +1286,15 @@ void DrawLoadSaveScreen(int loadsave) {
   DrawWindow(LSM_X - 10, LSM_Y - 5, LSM_W, LSM_H, BKGDCOLOR);
   DrawStripes(10);
 
-  if (!loadsave)
+  if (!loadsave) {
     VWB_DrawPic(60, 0, C_LOADGAMEPIC);
-  else
+  } else {
     VWB_DrawPic(60, 0, C_SAVEGAMEPIC);
+  }
 
-  for (i = 0; i < 10; i++)
+  for (i = 0; i < 10; i++) {
     PrintLSEntry(i, TEXTCOLOR);
+  }
 
   DrawMenu(&LSItems, &LSMenu[0]);
   VW_UpdateScreen();
@@ -1348,10 +1314,11 @@ void PrintLSEntry(int w, int color) {
   PrintY = LSM_Y + w * 13 + 1;
   fontnumber = 0;
 
-  if (SaveGamesAvail[w])
+  if (SaveGamesAvail[w]) {
     US_Print(SaveGameNames[w]);
-  else
+  } else {
     US_Print("      - " STR_EMPTY " -");
+  }
 
   fontnumber = 1;
 }
@@ -1379,10 +1346,11 @@ int CP_SaveGame(int quick) {
     if (SaveGamesAvail[which]) {
       name[7] = which + '0';
 
-      if (configdir[0])
+      if (configdir[0]) {
         snprintf(savepath, sizeof(savepath), "%s/%s", configdir, name);
-      else
+      } else {
         snprintf(savepath, sizeof(savepath), "%s", name);
+      }
 
       unlink(savepath);
       file = fopen(savepath, "wb");
@@ -1393,10 +1361,6 @@ int CP_SaveGame(int quick) {
       fseek(file, 32, SEEK_SET);
       SaveTheGame(file, 0, 0);
       fclose(file);
-
-#ifdef _arch_dreamcast
-      DC_SaveToVMU(name, input);
-#endif
 
       return 1;
     }
@@ -1432,9 +1396,10 @@ int CP_SaveGame(int quick) {
       name[7] = which + '0';
 
       fontnumber = 0;
-      if (!SaveGamesAvail[which])
+      if (!SaveGamesAvail[which]) {
         VWB_Bar(LSM_X + LSItems.indent + 1, LSM_Y + which * 13 + 1,
                 LSM_W - LSItems.indent - 16, 10, BKGDCOLOR);
+      }
       VW_UpdateScreen();
 
       if (US_LineInput(LSM_X + LSItems.indent + 2, LSM_Y + which * 13 + 1,
@@ -1443,10 +1408,11 @@ int CP_SaveGame(int quick) {
         snprintf(SaveGameNames[which], sizeof(SaveGameNames[which]), "%s",
                  input);
 
-        if (configdir[0])
+        if (configdir[0]) {
           snprintf(savepath, sizeof(savepath), "%s/%s", configdir, name);
-        else
+        } else {
           snprintf(savepath, sizeof(savepath), "%s", name);
+        }
 
         unlink(savepath);
         file = fopen(savepath, "wb");
@@ -1457,10 +1423,6 @@ int CP_SaveGame(int quick) {
         SaveTheGame(file, LSA_X + 8, LSA_Y + 5);
 
         fclose(file);
-
-#ifdef _arch_dreamcast
-        DC_SaveToVMU(name, input);
-#endif
 
         ShootSnd();
         exit = 1;
@@ -1538,11 +1500,7 @@ void DrawMouseSens(void) {
 #else
   ClearMScreen();
   VWB_DrawPic(112, 184, C_MOUSELBACKPIC);
-#ifdef SPANISH
-  DrawWindow(10, 80, 300, 43, BKGDCOLOR);
-#else
   DrawWindow(10, 80, 300, 30, BKGDCOLOR);
-#endif
 
   WindowX = 0;
   WindowW = 320;
@@ -1551,19 +1509,13 @@ void DrawMouseSens(void) {
   US_CPrint(STR_MOUSEADJ);
 
   SETFONTCOLOR(TEXTCOLOR, BKGDCOLOR);
-#ifdef SPANISH
-  PrintX = 14;
-  PrintY = 95 + 13;
-  US_Print(STR_SLOW);
-  PrintX = 252;
-  US_Print(STR_FAST);
-#else
+
   PrintX = 14;
   PrintY = 95;
   US_Print(STR_SLOW);
   PrintX = 269;
   US_Print(STR_FAST);
-#endif
+
 #endif
 
   VWB_Bar(60, 97, 200, 10, TEXTCOLOR);
@@ -1618,18 +1570,20 @@ int MouseSensitivity(int blank) {
       break;
     }
 
-    if (ci.button0 || Keyboard[sc_Space] || Keyboard[sc_Enter])
+    if (ci.button0 || Keyboard[sc_Space] || Keyboard[sc_Enter]) {
       exit = 1;
-    else if (ci.button1 || Keyboard[sc_Escape])
+    } else if (ci.button1 || Keyboard[sc_Escape]) {
       exit = 2;
+    }
 
   } while (!exit);
 
   if (exit == 2) {
     mouseadjustment = oldMA;
     SD_PlaySound(ESCPRESSEDSND);
-  } else
+  } else {
     SD_PlaySound(SHOOTSND);
+  }
 
   WaitKeyUp();
   MenuFadeOut();
@@ -1657,8 +1611,9 @@ void DrawCtlScreen(void) {
   WindowW = 320;
   SETFONTCOLOR(TEXTCOLOR, BKGDCOLOR);
 
-  if (IN_JoyPresent())
+  if (IN_JoyPresent()) {
     CtlMenu[CTL_JOYENABLE].active = 1;
+  }
 
   if (MousePresent) {
     CtlMenu[CTL_MOUSESENS].active = CtlMenu[CTL_MOUSEENABLE].active = 1;
@@ -1670,16 +1625,18 @@ void DrawCtlScreen(void) {
 
   x = CTL_X + CtlItems.indent - 24;
   y = CTL_Y + 3;
-  if (mouseenabled)
+  if (mouseenabled) {
     VWB_DrawPic(x, y, C_SELECTEDPIC);
-  else
+  } else {
     VWB_DrawPic(x, y, C_NOTSELECTEDPIC);
+  }
 
   y = CTL_Y + 29;
-  if (joystickenabled)
+  if (joystickenabled) {
     VWB_DrawPic(x, y, C_SELECTEDPIC);
-  else
+  } else {
     VWB_DrawPic(x, y, C_NOTSELECTEDPIC);
+  }
 
   //
   // PICK FIRST AVAILABLE SPOT
@@ -1792,11 +1749,12 @@ void EnterCtrlData(int index, CustomCtrls *cust, void (*DrawRtn)(int),
   //
   // FIND FIRST SPOT IN ALLOWED ARRAY
   //
-  for (j = 0; j < 4; j++)
+  for (j = 0; j < 4; j++) {
     if (cust->allowed[j]) {
       which = j;
       break;
     }
+  }
 
   do {
     if (redraw) {
@@ -1818,11 +1776,12 @@ void EnterCtrlData(int index, CustomCtrls *cust, void (*DrawRtn)(int),
     SDL_Delay(5);
     ReadAnyControl(&ci);
 
-    if (type == MOUSE || type == JOYSTICK)
+    if (type == MOUSE || type == JOYSTICK) {
       if (Keyboard[sc_Enter] || Keyboard[sc_Control] || Keyboard[sc_Alt]) {
         IN_ClearKeysDown();
         ci.button0 = ci.button1 = false;
       }
+    }
 
     //
     // CHANGE BUTTON VALUE?
@@ -1835,8 +1794,9 @@ void EnterCtrlData(int index, CustomCtrls *cust, void (*DrawRtn)(int),
       tick = picked = 0;
       SETFONTCOLOR(0, TEXTCOLOR);
 
-      if (type == KEYBOARDBTNS || type == KEYBOARDMOVE)
+      if (type == KEYBOARDBTNS || type == KEYBOARDMOVE) {
         IN_ClearKeysDown();
+      }
 
       while (1) {
         int button, result = 0;
@@ -1857,8 +1817,9 @@ void EnterCtrlData(int index, CustomCtrls *cust, void (*DrawRtn)(int),
           tick ^= 1;
           lastFlashTime = GetTimeCount();
           VW_UpdateScreen();
-        } else
+        } else {
           SDL_Delay(5);
+        }
 
         //
         // WHICH TYPE OF INPUT DO WE PROCESS?
@@ -1879,11 +1840,12 @@ void EnterCtrlData(int index, CustomCtrls *cust, void (*DrawRtn)(int),
           }
 
           if (result) {
-            for (z = 0; z < 4; z++)
+            for (z = 0; z < 4; z++) {
               if (order[which] == buttonmouse[z]) {
                 buttonmouse[z] = bt_nobutton;
                 break;
               }
+            }
 
             buttonmouse[result - 1] = order[which];
             picked = 1;
@@ -1892,14 +1854,15 @@ void EnterCtrlData(int index, CustomCtrls *cust, void (*DrawRtn)(int),
           break;
 
         case JOYSTICK:
-          if (ci.button0)
+          if (ci.button0) {
             result = 1;
-          else if (ci.button1)
+          } else if (ci.button1) {
             result = 2;
-          else if (ci.button2)
+          } else if (ci.button2) {
             result = 3;
-          else if (ci.button3)
+          } else if (ci.button3) {
             result = 4;
+          }
 
           if (result) {
             for (z = 0; z < 4; z++) {
@@ -1942,8 +1905,9 @@ void EnterCtrlData(int index, CustomCtrls *cust, void (*DrawRtn)(int),
           SD_PlaySound(ESCPRESSEDSND);
         }
 
-        if (picked)
+        if (picked) {
           break;
+        }
 
         ReadAnyControl(&ci);
       }
@@ -1954,8 +1918,9 @@ void EnterCtrlData(int index, CustomCtrls *cust, void (*DrawRtn)(int),
       continue;
     }
 
-    if (ci.button1 || Keyboard[sc_Escape])
+    if (ci.button1 || Keyboard[sc_Escape]) {
       exit = 1;
+    }
 
     //
     // MOVE TO ANOTHER SPOT?
@@ -1964,26 +1929,30 @@ void EnterCtrlData(int index, CustomCtrls *cust, void (*DrawRtn)(int),
     case dir_West:
       do {
         which--;
-        if (which < 0)
+        if (which < 0) {
           which = 3;
+        }
       } while (!cust->allowed[which]);
       redraw = 1;
       SD_PlaySound(MOVEGUN1SND);
-      while (ReadAnyControl(&ci), ci.dir != dir_None)
+      while (ReadAnyControl(&ci), ci.dir != dir_None) {
         SDL_Delay(5);
+      }
       IN_ClearKeysDown();
       break;
 
     case dir_East:
       do {
         which++;
-        if (which > 3)
+        if (which > 3) {
           which = 0;
+        }
       } while (!cust->allowed[which]);
       redraw = 1;
       SD_PlaySound(MOVEGUN1SND);
-      while (ReadAnyControl(&ci), ci.dir != dir_None)
+      while (ReadAnyControl(&ci), ci.dir != dir_None) {
         SDL_Delay(5);
+      }
       IN_ClearKeysDown();
       break;
     case dir_North:
@@ -2041,7 +2010,7 @@ void FixupCustom(int w) {
     VWB_Hlin(7, 32, y + 13, BORD2COLOR);
 #endif
 
-    if (lastwhich != w)
+    if (lastwhich != w) {
       switch (lastwhich) {
       case 0:
         DrawCustMouse(0);
@@ -2055,6 +2024,7 @@ void FixupCustom(int w) {
       case 8:
         DrawCustKeys(0);
       }
+    }
   }
 
   lastwhich = w;
@@ -2110,16 +2080,7 @@ void DrawCustomScreen(void) {
 #endif
 
   SETFONTCOLOR(TEXTCOLOR, BKGDCOLOR);
-#ifdef SPANISH
-  PrintX = CST_START - 16;
-  US_Print(STR_CRUN);
-  PrintX = CST_START - 16 + CST_SPC * 1;
-  US_Print(STR_COPEN);
-  PrintX = CST_START - 16 + CST_SPC * 2;
-  US_Print(STR_CFIRE);
-  PrintX = CST_START - 16 + CST_SPC * 3;
-  US_Print(STR_CSTRAFE "\n");
-#else
+
   PrintX = CST_START;
   US_Print(STR_CRUN);
   PrintX = CST_START + CST_SPC * 1;
@@ -2128,7 +2089,6 @@ void DrawCustomScreen(void) {
   US_Print(STR_CFIRE);
   PrintX = CST_START + CST_SPC * 3;
   US_Print(STR_CSTRAFE "\n");
-#endif
 
   DrawWindow(5, PrintY - 1, 310, 13, BKGDCOLOR);
   DrawCustMouse(0);
@@ -2150,16 +2110,7 @@ void DrawCustomScreen(void) {
 #endif
 
   SETFONTCOLOR(TEXTCOLOR, BKGDCOLOR);
-#ifdef SPANISH
-  PrintX = CST_START - 16;
-  US_Print(STR_CRUN);
-  PrintX = CST_START - 16 + CST_SPC * 1;
-  US_Print(STR_COPEN);
-  PrintX = CST_START - 16 + CST_SPC * 2;
-  US_Print(STR_CFIRE);
-  PrintX = CST_START - 16 + CST_SPC * 3;
-  US_Print(STR_CSTRAFE "\n");
-#else
+
   PrintX = CST_START;
   US_Print(STR_CRUN);
   PrintX = CST_START + CST_SPC * 1;
@@ -2168,7 +2119,7 @@ void DrawCustomScreen(void) {
   US_Print(STR_CFIRE);
   PrintX = CST_START + CST_SPC * 3;
   US_Print(STR_CSTRAFE "\n");
-#endif
+
   DrawWindow(5, PrintY - 1, 310, 13, BKGDCOLOR);
   DrawCustJoy(0);
   US_Print("\n");
@@ -2183,16 +2134,7 @@ void DrawCustomScreen(void) {
   PrintY += 13;
 #endif
   SETFONTCOLOR(TEXTCOLOR, BKGDCOLOR);
-#ifdef SPANISH
-  PrintX = CST_START - 16;
-  US_Print(STR_CRUN);
-  PrintX = CST_START - 16 + CST_SPC * 1;
-  US_Print(STR_COPEN);
-  PrintX = CST_START - 16 + CST_SPC * 2;
-  US_Print(STR_CFIRE);
-  PrintX = CST_START - 16 + CST_SPC * 3;
-  US_Print(STR_CSTRAFE "\n");
-#else
+
   PrintX = CST_START;
   US_Print(STR_CRUN);
   PrintX = CST_START + CST_SPC * 1;
@@ -2201,7 +2143,6 @@ void DrawCustomScreen(void) {
   US_Print(STR_CFIRE);
   PrintX = CST_START + CST_SPC * 3;
   US_Print(STR_CSTRAFE "\n");
-#endif
   DrawWindow(5, PrintY - 1, 310, 13, BKGDCOLOR);
   DrawCustKeybd(0);
   US_Print("\n");
@@ -2210,16 +2151,7 @@ void DrawCustomScreen(void) {
   // KEYBOARD MOVE KEYS
   //
   SETFONTCOLOR(TEXTCOLOR, BKGDCOLOR);
-#ifdef SPANISH
-  PrintX = 4;
-  US_Print(STR_LEFT);
-  US_Print("/");
-  US_Print(STR_RIGHT);
-  US_Print("/");
-  US_Print(STR_FRWD);
-  US_Print("/");
-  US_Print(STR_BKWD "\n");
-#else
+
   PrintX = CST_START;
   US_Print(STR_LEFT);
   PrintX = CST_START + CST_SPC * 1;
@@ -2228,19 +2160,20 @@ void DrawCustomScreen(void) {
   US_Print(STR_FRWD);
   PrintX = CST_START + CST_SPC * 3;
   US_Print(STR_BKWD "\n");
-#endif
   DrawWindow(5, PrintY - 1, 310, 13, BKGDCOLOR);
   DrawCustKeys(0);
 #endif
   //
   // PICK STARTING POINT IN MENU
   //
-  if (CusItems.curpos < 0)
-    for (i = 0; i < CusItems.amount; i++)
+  if (CusItems.curpos < 0) {
+    for (i = 0; i < CusItems.amount; i++) {
       if (CusMenu[i].active) {
         CusItems.curpos = i;
         break;
       }
+    }
+  }
 
   VW_UpdateScreen();
   MenuFadeIn();
@@ -2249,31 +2182,35 @@ void DrawCustomScreen(void) {
 void PrintCustMouse(int i) {
   int j;
 
-  for (j = 0; j < 4; j++)
+  for (j = 0; j < 4; j++) {
     if (order[i] == buttonmouse[j]) {
       PrintX = CST_START + CST_SPC * i;
       US_Print(mbarray[j]);
       break;
     }
+  }
 }
 
 void DrawCustMouse(int hilight) {
   int i, color;
 
   color = TEXTCOLOR;
-  if (hilight)
+  if (hilight) {
     color = HIGHLIGHT;
+  }
   SETFONTCOLOR(color, BKGDCOLOR);
 
   if (!mouseenabled) {
     SETFONTCOLOR(DEACTIVE, BKGDCOLOR);
     CusMenu[0].active = 0;
-  } else
+  } else {
     CusMenu[0].active = 1;
+  }
 
   PrintY = CST_Y + 13 * 2;
-  for (i = 0; i < 4; i++)
+  for (i = 0; i < 4; i++) {
     PrintCustMouse(i);
+  }
 }
 
 void PrintCustJoy(int i) {
@@ -2292,19 +2229,22 @@ void DrawCustJoy(int hilight) {
   int i, color;
 
   color = TEXTCOLOR;
-  if (hilight)
+  if (hilight) {
     color = HIGHLIGHT;
+  }
   SETFONTCOLOR(color, BKGDCOLOR);
 
   if (!joystickenabled) {
     SETFONTCOLOR(DEACTIVE, BKGDCOLOR);
     CusMenu[3].active = 0;
-  } else
+  } else {
     CusMenu[3].active = 1;
+  }
 
   PrintY = CST_Y + 13 * 5;
-  for (i = 0; i < 4; i++)
+  for (i = 0; i < 4; i++) {
     PrintCustJoy(i);
+  }
 }
 
 void PrintCustKeybd(int i) {
@@ -2316,13 +2256,15 @@ void DrawCustKeybd(int hilight) {
   int i, color;
 
   color = TEXTCOLOR;
-  if (hilight)
+  if (hilight) {
     color = HIGHLIGHT;
+  }
   SETFONTCOLOR(color, BKGDCOLOR);
 
   PrintY = CST_Y + 13 * 8;
-  for (i = 0; i < 4; i++)
+  for (i = 0; i < 4; i++) {
     PrintCustKeybd(i);
+  }
 }
 
 void PrintCustKeys(int i) {
@@ -2334,13 +2276,15 @@ void DrawCustKeys(int hilight) {
   int i, color;
 
   color = TEXTCOLOR;
-  if (hilight)
+  if (hilight) {
     color = HIGHLIGHT;
+  }
   SETFONTCOLOR(color, BKGDCOLOR);
 
   PrintY = CST_Y + 13 * 10;
-  for (i = 0; i < 4; i++)
+  for (i = 0; i < 4; i++) {
     PrintCustKeys(i);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -2367,12 +2311,14 @@ int CP_ChangeView(int blank) {
     case dir_South:
     case dir_West:
       newview--;
-      if (newview < 4)
+      if (newview < 4) {
         newview = 4;
-      if (newview >= 19)
+      }
+      if (newview >= 19) {
         DrawChangeView(newview);
-      else
+      } else {
         ShowViewSize(newview);
+      }
       VW_UpdateScreen();
       SD_PlaySound(HITWALLSND);
       TicDelay(10);
@@ -2384,21 +2330,23 @@ int CP_ChangeView(int blank) {
       if (newview >= 21) {
         newview = 21;
         DrawChangeView(newview);
-      } else
+      } else {
         ShowViewSize(newview);
+      }
       VW_UpdateScreen();
       SD_PlaySound(HITWALLSND);
       TicDelay(10);
       break;
     }
 
-    if (ci.button0 || Keyboard[sc_Enter])
+    if (ci.button0 || Keyboard[sc_Enter]) {
       exit = 1;
-    else if (ci.button1 || Keyboard[sc_Escape]) {
+    } else if (ci.button1 || Keyboard[sc_Escape]) {
       SD_PlaySound(ESCPRESSEDSND);
       MenuFadeOut();
-      if (screenHeight % 200 != 0)
+      if (screenHeight % 200 != 0) {
         VL_ClearScreen(0);
+      }
       return 0;
     }
   } while (!exit);
@@ -2411,8 +2359,9 @@ int CP_ChangeView(int blank) {
 
   ShootSnd();
   MenuFadeOut();
-  if (screenHeight % 200 != 0)
+  if (screenHeight % 200 != 0) {
     VL_ClearScreen(0);
+  }
 
   return 0;
 }
@@ -2423,8 +2372,9 @@ int CP_ChangeView(int blank) {
 //
 void DrawChangeView(int view) {
   int rescaledHeight = screenHeight / scaleFactor;
-  if (view != 21)
+  if (view != 21) {
     VWB_Bar(0, rescaledHeight - 40, 320, 40, bordercol);
+  }
 
 #ifdef JAPAN
   VWB_DrawPic(0, 0, S_CHANGEPIC);
@@ -2455,11 +2405,7 @@ int CP_Quit(int blank) {
   if (GetYorN(7, 11, C_QUITMSGPIC))
 #else
 
-#ifdef SPANISH
-  if (Confirm(ENDGAMESTR))
-#else
   if (Confirm(endStrings[US_RndT() & 0x7 + (US_RndT() & 1)]))
-#endif
 
 #endif
   {
@@ -2507,18 +2453,22 @@ void IntroScreen(void) {
   //
 #ifdef ABCAUS
   memory = (1023l + mminfo.nearheap + mminfo.farheap) / 1024l;
-  for (i = 0; i < 10; i++)
-    if (memory >= main[i])
+  for (i = 0; i < 10; i++) {
+    if (memory >= main[i]) {
       VWB_Bar(49, 163 - 8 * i, 6, 5, MAINCOLOR - i);
+    }
+  }
 
   //
   // DRAW EMS MEMORY
   //
   if (EMSPresent) {
     emshere = 4l * EMSPagesAvail;
-    for (i = 0; i < 10; i++)
-      if (emshere >= ems[i])
+    for (i = 0; i < 10; i++) {
+      if (emshere >= ems[i]) {
         VWB_Bar(89, 163 - 8 * i, 6, 5, EMSCOLOR - i);
+      }
+    }
   }
 
   //
@@ -2526,33 +2476,42 @@ void IntroScreen(void) {
   //
   if (XMSPresent) {
     xmshere = 4l * XMSPagesAvail;
-    for (i = 0; i < 10; i++)
-      if (xmshere >= xms[i])
+    for (i = 0; i < 10; i++) {
+      if (xmshere >= xms[i]) {
         VWB_Bar(129, 163 - 8 * i, 6, 5, XMSCOLOR - i);
+      }
+    }
   }
 #else
-  for (i = 0; i < 10; i++)
+  for (i = 0; i < 10; i++) {
     VWB_Bar(49, 163 - 8 * i, 6, 5, MAINCOLOR - i);
-  for (i = 0; i < 10; i++)
+  }
+  for (i = 0; i < 10; i++) {
     VWB_Bar(89, 163 - 8 * i, 6, 5, EMSCOLOR - i);
-  for (i = 0; i < 10; i++)
+  }
+  for (i = 0; i < 10; i++) {
     VWB_Bar(129, 163 - 8 * i, 6, 5, XMSCOLOR - i);
+  }
 #endif
 
   //
   // FILL BOXES
   //
-  if (MousePresent)
+  if (MousePresent) {
     VWB_Bar(164, 82, 12, 2, FILLCOLOR);
+  }
 
-  if (IN_JoyPresent())
+  if (IN_JoyPresent()) {
     VWB_Bar(164, 105, 12, 2, FILLCOLOR);
+  }
 
-  if (AdLibPresent && !SoundBlasterPresent)
+  if (AdLibPresent && !SoundBlasterPresent) {
     VWB_Bar(164, 128, 12, 2, FILLCOLOR);
+  }
 
-  if (SoundBlasterPresent)
+  if (SoundBlasterPresent) {
     VWB_Bar(164, 151, 12, 2, FILLCOLOR);
+  }
 
   //    if (SoundSourcePresent)
   //        VWB_Bar (164, 174, 12, 2, FILLCOLOR);
@@ -2608,13 +2567,15 @@ void SetupControlPanel(void) {
   SETFONTCOLOR(TEXTCOLOR, BKGDCOLOR);
   fontnumber = 1;
   WindowH = 200;
-  if (screenHeight % 200 != 0)
+  if (screenHeight % 200 != 0) {
     VL_ClearScreen(0);
+  }
 
-  if (!ingame)
+  if (!ingame) {
     CA_LoadAllSounds();
-  else
+  } else {
     MainMenu[savegame].active = 1;
+  }
 
   IN_CenterMouse();
 }
@@ -2633,27 +2594,20 @@ void SetupSaveGames() {
   snprintf(name, sizeof(name), "%s", SaveName);
   for (i = 0; i < 10; i++) {
     name[7] = '0' + i;
-#ifdef _arch_dreamcast
-    // Try to unpack file
-    if (DC_LoadFromVMU(name)) {
-#endif
-      if (configdir[0])
-        snprintf(savepath, sizeof(savepath), "%s/%s", configdir, name);
-      else
-        snprintf(savepath, sizeof(savepath), "%s", name);
 
-      file = fopen(savepath, "rb");
-
-      if (file) {
-        SaveGamesAvail[i] = 1;
-        fread(SaveGameNames[i], MaxGameName, 1, file);
-        fclose(file);
-      }
-#ifdef _arch_dreamcast
-      // Remove unpacked version of file
-      fs_unlink(name);
+    if (configdir[0]) {
+      snprintf(savepath, sizeof(savepath), "%s/%s", configdir, name);
+    } else {
+      snprintf(savepath, sizeof(savepath), "%s", name);
     }
-#endif
+
+    file = fopen(savepath, "rb");
+
+    if (file) {
+      SaveGamesAvail[i] = 1;
+      fread(SaveGameNames[i], MaxGameName, 1, file);
+      fclose(file);
+    }
   }
 }
 
@@ -2692,8 +2646,9 @@ int HandleMenu(CP_iteminfo *item_i, CP_itemtype *items,
   //
   // CALL CUSTOM ROUTINE IF IT IS NEEDED
   //
-  if (routine)
+  if (routine) {
     routine(which);
+  }
   VW_UpdateScreen();
 
   shape = C_CURSOR1PIC;
@@ -2717,11 +2672,13 @@ int HandleMenu(CP_iteminfo *item_i, CP_itemtype *items,
         timer = 70;
       }
       VWB_DrawPic(x, y, shape);
-      if (routine)
+      if (routine) {
         routine(which);
+      }
       VW_UpdateScreen();
-    } else
+    } else {
       SDL_Delay(5);
+    }
 
     CheckPause();
 
@@ -2735,10 +2692,11 @@ int HandleMenu(CP_iteminfo *item_i, CP_itemtype *items,
     if (key) {
       int ok = 0;
 
-      if (key >= 'a')
+      if (key >= 'a') {
         key -= 'a' - 'A';
+      }
 
-      for (i = which + 1; i < item_i->amount; i++)
+      for (i = which + 1; i < item_i->amount; i++) {
         if ((items + i)->active && (items + i)->string[0] == key) {
           EraseGun(item_i, items, x, y, which);
           which = i;
@@ -2747,12 +2705,13 @@ int HandleMenu(CP_iteminfo *item_i, CP_itemtype *items,
           IN_ClearKeysDown();
           break;
         }
+      }
 
       //
       // DIDN'T FIND A MATCH FIRST TIME THRU. CHECK AGAIN.
       //
       if (!ok) {
-        for (i = 0; i < which; i++)
+        for (i = 0; i < which; i++) {
           if ((items + i)->active && (items + i)->string[0] == key) {
             EraseGun(item_i, items, x, y, which);
             which = i;
@@ -2760,6 +2719,7 @@ int HandleMenu(CP_iteminfo *item_i, CP_itemtype *items,
             IN_ClearKeysDown();
             break;
           }
+        }
       }
     }
 
@@ -2788,10 +2748,11 @@ int HandleMenu(CP_iteminfo *item_i, CP_itemtype *items,
       // MOVE TO NEXT AVAILABLE SPOT
       //
       do {
-        if (!which)
+        if (!which) {
           which = item_i->amount - 1;
-        else
+        } else {
           which--;
+        }
       } while (!(items + which)->active);
 
       DrawGun(item_i, items, x, &y, which, basey, routine);
@@ -2817,10 +2778,11 @@ int HandleMenu(CP_iteminfo *item_i, CP_itemtype *items,
       }
 
       do {
-        if (which == item_i->amount - 1)
+        if (which == item_i->amount - 1) {
           which = 0;
-        else
+        } else {
           which++;
+        }
       } while (!(items + which)->active);
 
       DrawGun(item_i, items, x, &y, which, basey, routine);
@@ -2832,11 +2794,13 @@ int HandleMenu(CP_iteminfo *item_i, CP_itemtype *items,
       break;
     }
 
-    if (ci.button0 || Keyboard[sc_Space] || Keyboard[sc_Enter])
+    if (ci.button0 || Keyboard[sc_Space] || Keyboard[sc_Enter]) {
       exit = 1;
+    }
 
-    if (ci.button1 && !Keyboard[sc_Alt] || Keyboard[sc_Escape])
+    if (ci.button1 && !Keyboard[sc_Alt] || Keyboard[sc_Escape]) {
       exit = 2;
+    }
 
   } while (!exit);
 
@@ -2851,11 +2815,13 @@ int HandleMenu(CP_iteminfo *item_i, CP_itemtype *items,
     PrintY = item_i->y + which * 13;
     US_Print((items + which)->string);
     redrawitem = 1;
-  } else
+  } else {
     redrawitem = 0;
+  }
 
-  if (routine)
+  if (routine) {
     routine(which);
+  }
   VW_UpdateScreen();
 
   item_i->curpos = which;
@@ -2922,8 +2888,9 @@ void DrawGun(CP_iteminfo *item_i, CP_itemtype *items, int x, int *y, int which,
   //
   // CALL CUSTOM ROUTINE IF IT IS NEEDED
   //
-  if (routine)
+  if (routine) {
     routine(which);
+  }
   VW_UpdateScreen();
   SD_PlaySound(MOVEGUN2SND);
 }
@@ -2960,9 +2927,9 @@ void DrawMenu(CP_iteminfo *item_i, CP_itemtype *items) {
     SetTextColor(items + i, which == i);
 
     PrintY = item_i->y + i * 13;
-    if ((items + i)->active)
+    if ((items + i)->active) {
       US_Print((items + i)->string);
-    else {
+    } else {
       SETFONTCOLOR(DEACTIVE, BKGDCOLOR);
       US_Print((items + i)->string);
       SETFONTCOLOR(TEXTCOLOR, BKGDCOLOR);
@@ -3018,10 +2985,12 @@ void ReadAnyControl(ControlInfo *ci) {
     int middlePressed = buttons & SDL_BUTTON(SDL_BUTTON_MIDDLE);
     int rightPressed = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
     buttons &= ~(SDL_BUTTON(SDL_BUTTON_MIDDLE) | SDL_BUTTON(SDL_BUTTON_RIGHT));
-    if (middlePressed)
+    if (middlePressed) {
       buttons |= 1 << 2;
-    if (rightPressed)
+    }
+    if (rightPressed) {
       buttons |= 1 << 1;
+    }
 
     totalMousex += mousex;
     totalMousey += mousey;
@@ -3060,15 +3029,17 @@ void ReadAnyControl(ControlInfo *ci) {
     int jx, jy, jb;
 
     IN_GetJoyDelta(&jx, &jy);
-    if (jy < -SENSITIVE)
+    if (jy < -SENSITIVE) {
       ci->dir = dir_North;
-    else if (jy > SENSITIVE)
+    } else if (jy > SENSITIVE) {
       ci->dir = dir_South;
+    }
 
-    if (jx < -SENSITIVE)
+    if (jx < -SENSITIVE) {
       ci->dir = dir_West;
-    else if (jx > SENSITIVE)
+    } else if (jx > SENSITIVE) {
       ci->dir = dir_East;
+    }
 
     jb = IN_JoyButtons();
     if (jb) {
@@ -3117,27 +3088,18 @@ int Confirm(const char *string) {
       VW_UpdateScreen();
       tick ^= 1;
       lastBlinkTime = GetTimeCount();
-    } else
+    } else {
       SDL_Delay(5);
+    }
 
-#ifdef SPANISH
-  } while (!Keyboard[sc_S] && !Keyboard[sc_N] && !Keyboard[sc_Escape]);
-#else
   } while (!Keyboard[sc_Y] && !Keyboard[sc_N] && !Keyboard[sc_Escape] &&
            !ci.button0 && !ci.button1);
-#endif
 
-#ifdef SPANISH
-  if (Keyboard[sc_S] || ci.button0) {
-    xit = 1;
-    ShootSnd();
-  }
-#else
+
   if (Keyboard[sc_Y] || ci.button0) {
     xit = 1;
     ShootSnd();
   }
-#endif
 
   IN_ClearKeysDown();
   WaitKeyUp();
@@ -3147,54 +3109,6 @@ int Confirm(const char *string) {
   return xit;
 }
 
-#ifdef JAPAN
-////////////////////////////////////////////////////////////////////
-//
-// DRAW MESSAGE & GET Y OR N
-//
-////////////////////////////////////////////////////////////////////
-int GetYorN(int x, int y, int pic) {
-  int xit = 0;
-  soundnames whichsnd[2] = {ESCPRESSEDSND, SHOOTSND};
-
-  VWB_DrawPic(x * 8, y * 8, pic);
-  VW_UpdateScreen();
-  IN_ClearKeysDown();
-
-  do {
-    IN_WaitAndProcessEvents();
-  }
-#ifdef SPANISH
-  while (!Keyboard[sc_S] && !Keyboard[sc_N] && !Keyboard[sc_Escape]);
-#else
-  while (!Keyboard[sc_Y] && !Keyboard[sc_N] && !Keyboard[sc_Escape]);
-#endif
-
-#ifdef SPANISH
-  if (Keyboard[sc_S]) {
-    xit = 1;
-    ShootSnd();
-  }
-
-  while (Keyboard[sc_S] || Keyboard[sc_N] || Keyboard[sc_Escape])
-    IN_WaitAndProcessEvents();
-
-#else
-
-  if (Keyboard[sc_Y]) {
-    xit = 1;
-    ShootSnd();
-  }
-
-  while (Keyboard[sc_Y] || Keyboard[sc_N] || Keyboard[sc_Escape])
-    IN_WaitAndProcessEvents();
-#endif
-
-  IN_ClearKeysDown();
-  SD_PlaySound(whichsnd[xit]);
-  return xit;
-}
-#endif
 
 ////////////////////////////////////////////////////////////////////
 //
@@ -3210,16 +3124,19 @@ void Message(const char *string) {
   h = font->height;
   for (i = 0; i < len; i++) {
     if (string[i] == '\n') {
-      if (w > mw)
+      if (w > mw) {
         mw = w;
+      }
       w = 0;
       h += font->height;
-    } else
+    } else {
       w += font->width[(byte)string[i]];
+    }
   }
 
-  if (w + 10 > mw)
+  if (w + 10 > mw) {
     mw = w + 10;
+  }
 
   PrintY = (WindowH / 2) - h / 2;
   PrintX = WindowX = 160 - mw / 2;
@@ -3339,8 +3256,7 @@ void CheckForEpisodes(void) {
   if (configdir[0] != 0) {
     // Ensure config directory exists and create if necessary
     if (stat(configdir, &statbuf) != 0) {
-      if (mkdir(configdir, 0755) != 0)
-      {
+      if (mkdir(configdir, 0755) != 0) {
         Quit("The configuration directory \"%s\" could not be created.",
              configdir);
       }
@@ -3360,18 +3276,20 @@ void CheckForEpisodes(void) {
 #endif
     EpisodeSelect[1] = EpisodeSelect[2] = EpisodeSelect[3] = EpisodeSelect[4] =
         EpisodeSelect[5] = 1;
-  } else
+  } else {
     Quit("NO JAPANESE WOLFENSTEIN 3-D DATA FILES to be found!");
+  }
 #else
 
 //
 // ENGLISH
 //
 #ifdef UPLOAD
-  if (!stat("vswap.wl1", &statbuf))
+  if (!stat("vswap.wl1", &statbuf)) {
     snprintf(extension, sizeof(extension), "wl1");
-  else
+  } else {
     Quit("NO WOLFENSTEIN 3-D DATA FILES to be found!");
+  }
 #else
 #ifndef SPEAR
   if (!stat("vswap.wl6", &statbuf)) {
@@ -3386,10 +3304,11 @@ void CheckForEpisodes(void) {
       NewEmenu[2].active = NewEmenu[4].active = EpisodeSelect[1] =
           EpisodeSelect[2] = 1;
     } else {
-      if (!stat("vswap.wl1", &statbuf))
+      if (!stat("vswap.wl1", &statbuf)) {
         snprintf(extension, sizeof(extension), "wl1");
-      else
+      } else {
         Quit("NO WOLFENSTEIN 3-D DATA FILES to be found!");
+      }
     }
   }
 #endif
@@ -3398,32 +3317,38 @@ void CheckForEpisodes(void) {
 #ifdef SPEAR
 #ifndef SPEARDEMO
   if (param_mission == 0) {
-    if (!stat("vswap.sod", &statbuf))
+    if (!stat("vswap.sod", &statbuf)) {
       snprintf(extension, sizeof(extension), "sod");
-    else
+    } else {
       Quit("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
+    }
   } else if (param_mission == 1) {
-    if (!stat("vswap.sd1", &statbuf))
+    if (!stat("vswap.sd1", &statbuf)) {
       snprintf(extension, sizeof(extension), "sd1");
-    else
+    } else {
       Quit("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
+    }
   } else if (param_mission == 2) {
-    if (!stat("vswap.sd2", &statbuf))
+    if (!stat("vswap.sd2", &statbuf)) {
       snprintf(extension, sizeof(extension), "sd2");
-    else
+    } else {
       Quit("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
+    }
   } else if (param_mission == 3) {
-    if (!stat("vswap.sd3", &statbuf))
+    if (!stat("vswap.sd3", &statbuf)) {
       snprintf(extension, sizeof(extension), "sd3");
-    else
+    } else {
       Quit("NO SPEAR OF DESTINY DATA FILES TO BE FOUND!");
-  } else
+    }
+  } else {
     Quit("UNSUPPORTED MISSION!");
+  }
 #else
   if (!stat("vswap.sdm", &statbuf)) {
     snprintf(extension, sizeof(extension), "sdm");
-  } else
+  } else {
     Quit("NO SPEAR OF DESTINY DEMO DATA FILES TO BE FOUND!");
+  }
 #endif
 #endif
 

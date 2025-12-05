@@ -60,10 +60,12 @@ static int INL_GetMouseButtons(void) {
 
   buttons &= ~(SDL_BUTTON(SDL_BUTTON_MIDDLE) | SDL_BUTTON(SDL_BUTTON_RIGHT));
 
-  if (middlePressed)
+  if (middlePressed) {
     buttons |= 1 << 2;
-  if (rightPressed)
+  }
+  if (rightPressed) {
     buttons |= 1 << 1;
+  }
 
   return buttons;
 }
@@ -82,26 +84,24 @@ void IN_GetJoyDelta(int *dx, int *dy) {
   }
 
   SDL_JoystickUpdate();
-#ifdef _arch_dreamcast
-  int x = 0;
-  int y = 0;
-#else
+
   int x = SDL_JoystickGetAxis(Joystick, 0) >> 8;
   int y = SDL_JoystickGetAxis(Joystick, 1) >> 8;
-#endif
 
   if (param_joystickhat != -1) {
     uint8_t hatState = SDL_JoystickGetHat(Joystick, param_joystickhat);
 
-    if (hatState & SDL_HAT_RIGHT)
+    if (hatState & SDL_HAT_RIGHT) {
       x += 127;
-    else if (hatState & SDL_HAT_LEFT)
+    } else if (hatState & SDL_HAT_LEFT) {
       x -= 127;
+    }
 
-    if (hatState & SDL_HAT_DOWN)
+    if (hatState & SDL_HAT_DOWN) {
       y += 127;
-    else if (hatState & SDL_HAT_UP)
+    } else if (hatState & SDL_HAT_UP) {
       y -= 127;
+    }
 
     x = MAX(-128, MIN(x, 127));
     y = MAX(-128, MIN(y, 127));
@@ -148,15 +148,17 @@ void IN_GetJoyFineDelta(int *dx, int *dy) {
 int IN_JoyButtons(void) {
   int i;
 
-  if (!Joystick)
+  if (!Joystick) {
     return 0;
+  }
 
   SDL_JoystickUpdate();
 
   int res = 0;
 
-  for (i = 0; i < JoyNumButtons && i < 32; i++)
+  for (i = 0; i < JoyNumButtons && i < 32; i++) {
     res |= SDL_JoystickGetButton(Joystick, i) << i;
+  }
 
   return res;
 }
@@ -172,8 +174,9 @@ boolean IN_JoyPresent(void) { return Joystick != NULL; }
 */
 
 void IN_CenterMouse(void) {
-  if (MousePresent && GrabInput)
+  if (MousePresent && GrabInput) {
     SDL_WarpMouseInWindow(window, screenWidth / 2, screenHeight / 2);
+  }
 }
 
 /*
@@ -238,13 +241,15 @@ ScanCode IN_MapKey(int key) {
 void IN_SetWindowGrab(SDL_Window *window) {
   const char *which[] = {"hide", "show"};
 
-  if (SDL_ShowCursor(!GrabInput) < 0)
+  if (SDL_ShowCursor(!GrabInput) < 0) {
     Quit("Unable to %s cursor: %s\n", which[!GrabInput], SDL_GetError());
+  }
 
   SDL_SetWindowGrab(window, GrabInput);
 
-  if (SDL_SetRelativeMouseMode(GrabInput))
+  if (SDL_SetRelativeMouseMode(GrabInput)) {
     Quit("Unable to set relative mode for mouse: %s\n", SDL_GetError());
+  }
 }
 
 /*
@@ -294,22 +299,26 @@ static void IN_HandleEvent(SDL_Event *event) {
     LastScan = IN_MapKey(key);
 
     if (Keyboard[sc_Alt]) {
-      if (LastScan == sc_F4)
+      if (LastScan == sc_F4) {
         Quit(NULL);
+      }
     }
 
-    if (LastScan < sc_Last)
+    if (LastScan < sc_Last) {
       Keyboard[LastScan] = true;
+    }
 
-    if (LastScan == sc_Pause)
+    if (LastScan == sc_Pause) {
       Paused = true;
+    }
     break;
 
   case SDL_KEYUP:
     key = IN_MapKey(key);
 
-    if (key < sc_Last)
+    if (key < sc_Last) {
       Keyboard[key] = false;
+    }
     break;
 #if defined(GP2X)
   case SDL_JOYBUTTONDOWN:
@@ -329,13 +338,15 @@ static void IN_HandleEvent(SDL_Event *event) {
 void IN_ProcessEvents(void) {
   SDL_Event event;
 
-  while (SDL_PollEvent(&event))
+  while (SDL_PollEvent(&event)) {
     IN_HandleEvent(&event);
+  }
 }
 
 void IN_WaitEvent(void) {
-  if (!SDL_WaitEvent(NULL))
+  if (!SDL_WaitEvent(NULL)) {
     Quit("Error waiting for event: %s\n", SDL_GetError());
+  }
 }
 
 void IN_WaitAndProcessEvents(void) {
@@ -349,8 +360,9 @@ void IN_WaitAndProcessEvents(void) {
 //
 ///////////////////////////////////////////////////////////////////////////
 void IN_Startup(void) {
-  if (IN_Started)
+  if (IN_Started) {
     return;
+  }
 
   IN_ClearKeysDown();
 
@@ -360,13 +372,15 @@ void IN_Startup(void) {
     if (Joystick) {
       JoyNumButtons = SDL_JoystickNumButtons(Joystick);
 
-      if (JoyNumButtons > 32)
+      if (JoyNumButtons > 32) {
         JoyNumButtons = 32; // only up to 32 buttons are supported
+      }
 
       JoyNumHats = SDL_JoystickNumHats(Joystick);
 
-      if (param_joystickhat < -1 || param_joystickhat >= JoyNumHats)
+      if (param_joystickhat < -1 || param_joystickhat >= JoyNumHats) {
         Quit("The joystickhat param must be between 0 and %i!", JoyNumHats - 1);
+      }
     }
   }
 
@@ -378,14 +392,7 @@ void IN_Startup(void) {
     IN_SetWindowGrab(window);
   }
 
-  // I didn't find a way to ask libSDL whether a mouse is present, yet...
-#if defined(GP2X)
-  MousePresent = false;
-#elif defined(_arch_dreamcast)
-  MousePresent = DC_MousePresent();
-#else
   MousePresent = true;
-#endif
 
   IN_Started = true;
 }
@@ -396,11 +403,13 @@ void IN_Startup(void) {
 //
 ///////////////////////////////////////////////////////////////////////////
 void IN_Shutdown(void) {
-  if (!IN_Started)
+  if (!IN_Started) {
     return;
+  }
 
-  if (Joystick)
+  if (Joystick) {
     SDL_JoystickClose(Joystick);
+  }
 
   IN_Started = false;
 }
@@ -449,15 +458,17 @@ void IN_ReadControl(ControlInfo *info) {
     my = 1;
   }
 
-  if (Keyboard[sc_UpArrow])
+  if (Keyboard[sc_UpArrow]) {
     my = -1;
-  else if (Keyboard[sc_DownArrow])
+  } else if (Keyboard[sc_DownArrow]) {
     my = 1;
+  }
 
-  if (Keyboard[sc_LeftArrow])
+  if (Keyboard[sc_LeftArrow]) {
     mx = -1;
-  else if (Keyboard[sc_RightArrow])
+  } else if (Keyboard[sc_RightArrow]) {
     mx = 1;
+  }
 
   dx = mx * 127;
   dy = my * 127;
@@ -482,8 +493,9 @@ void IN_ReadControl(ControlInfo *info) {
 ScanCode IN_WaitForKey(void) {
   ScanCode result;
 
-  for (result = LastScan; !result; result = LastScan)
+  for (result = LastScan; !result; result = LastScan) {
     IN_WaitAndProcessEvents();
+  }
 
   LastScan = 0;
 
@@ -511,12 +523,14 @@ void IN_StartAck(void) {
 
   int buttons = IN_JoyButtons() << 4;
 
-  if (MousePresent)
+  if (MousePresent) {
     buttons |= IN_MouseButtons();
+  }
 
   for (i = 0; i < NUMBUTTONS; i++, buttons >>= 1) {
-    if (buttons & 1)
+    if (buttons & 1) {
       btnstate[i] = true;
+    }
   }
 }
 
@@ -527,13 +541,15 @@ boolean IN_CheckAck(void) {
   //
   // see if something has been pressed
   //
-  if (LastScan)
+  if (LastScan) {
     return true;
+  }
 
   int buttons = IN_JoyButtons() << 4;
 
-  if (MousePresent)
+  if (MousePresent) {
     buttons |= IN_MouseButtons();
+  }
 
   for (i = 0; i < NUMBUTTONS; i++, buttons >>= 1) {
     if (buttons & 1) {
@@ -544,15 +560,17 @@ boolean IN_CheckAck(void) {
 
           buttons = IN_JoyButtons() << 4;
 
-          if (MousePresent)
+          if (MousePresent) {
             buttons |= IN_MouseButtons();
+          }
 
         } while (buttons & (1 << i));
 
         return true;
       }
-    } else
+    } else {
       btnstate[i] = false;
+    }
   }
 
   return false;
@@ -571,8 +589,8 @@ void IN_Ack(void) {
 //
 //	IN_UserInput() - Waits for the specified delay time (in ticks) or the
 //		user pressing a key or a mouse button. If the clear flag is set,
-//it 		then either clears the key or waits for the user to let the mouse 		button
-//up.
+// it 		then either clears the key or waits for the user to let the
+// mouse 		button up.
 //
 ///////////////////////////////////////////////////////////////////////////
 boolean IN_UserInput(longword delay) {
@@ -584,8 +602,9 @@ boolean IN_UserInput(longword delay) {
   do {
     IN_ProcessEvents();
 
-    if (IN_CheckAck())
+    if (IN_CheckAck()) {
       return true;
+    }
 
     SDL_Delay(5);
 
@@ -604,8 +623,8 @@ boolean IN_UserInput(longword delay) {
 ===================
 */
 int IN_MouseButtons(void) {
-  if (MousePresent)
+  if (MousePresent) {
     return INL_GetMouseButtons();
-  else
-    return 0;
+  }
+  return 0;
 }

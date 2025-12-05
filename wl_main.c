@@ -85,7 +85,6 @@ int param_audiobuffer = DEFAULT_AUDIO_BUFFER_SIZE;
 int param_joystickhat = -1;
 int param_samplerate = 44100;
 
-
 int param_mission = 0;
 boolean param_goodtimes = false;
 boolean param_ignorenumchunks = false;
@@ -114,10 +113,11 @@ void ReadConfig(void) {
 
   char configpath[300];
 
-  if (configdir[0])
+  if (configdir[0]) {
     snprintf(configpath, sizeof(configpath), "%s/%s", configdir, configname);
-  else
+  } else {
     snprintf(configpath, sizeof(configpath), "%s", configname);
+  }
 
   file = fopen(configpath, "rb");
 
@@ -164,30 +164,37 @@ void ReadConfig(void) {
       sm = smm_Off;
     }
 
-    if ((sds == sds_SoundBlaster && !SoundBlasterPresent))
+    if ((sds == sds_SoundBlaster && !SoundBlasterPresent)) {
       sds = sds_Off;
+    }
 
     // make sure values are correct
 
-    if (mouseenabled)
+    if (mouseenabled) {
       mouseenabled = true;
-    if (joystickenabled)
+    }
+    if (joystickenabled) {
       joystickenabled = true;
+    }
 
-    if (!MousePresent)
+    if (!MousePresent) {
       mouseenabled = false;
-    if (!IN_JoyPresent())
+    }
+    if (!IN_JoyPresent()) {
       joystickenabled = false;
+    }
 
-    if (mouseadjustment < 0)
+    if (mouseadjustment < 0) {
       mouseadjustment = 0;
-    else if (mouseadjustment > 9)
+    } else if (mouseadjustment > 9) {
       mouseadjustment = 9;
+    }
 
-    if (viewsize < 4)
+    if (viewsize < 4) {
       viewsize = 4;
-    else if (viewsize > 21)
+    } else if (viewsize > 21) {
       viewsize = 21;
+    }
 
     MainMenu[6].active = 1;
     MainItems.curpos = 0;
@@ -204,16 +211,19 @@ void ReadConfig(void) {
       sm = smm_Off;
     }
 
-    if (SoundBlasterPresent)
+    if (SoundBlasterPresent) {
       sds = sds_SoundBlaster;
-    else
+    } else {
       sds = sds_Off;
+    }
 
-    if (MousePresent)
+    if (MousePresent) {
       mouseenabled = true;
+    }
 
-    if (IN_JoyPresent())
+    if (IN_JoyPresent()) {
       joystickenabled = true;
+    }
 
     viewsize = 19; // start with a good size
     mouseadjustment = 5;
@@ -236,10 +246,11 @@ void WriteConfig(void) {
   char configpath[300];
   FILE *file;
 
-  if (configdir[0])
+  if (configdir[0]) {
     snprintf(configpath, sizeof(configpath), "%s/%s", configdir, configname);
-  else
+  } else {
     snprintf(configpath, sizeof(configpath), "%s", configname);
+  }
 
   file = fopen(configpath, "wb");
 
@@ -303,8 +314,9 @@ void NewGame(int difficulty, int episode) {
 
 void DiskFlopAnim(int x, int y) {
   static int8_t which = 0;
-  if (!x && !y)
+  if (!x && !y) {
     return;
+  }
   VWB_DrawPic(x, y, C_DISKLOADING1PIC + which);
   VW_UpdateScreen();
   which ^= 1;
@@ -316,8 +328,9 @@ int32_t DoChecksum(void *source, unsigned size, int32_t checksum) {
 
   src = source;
 
-  for (i = 0; i < size - 1; i++)
+  for (i = 0; i < size - 1; i++) {
     checksum += src[i] ^ src[i + 1];
+  }
 
   return checksum;
 }
@@ -366,10 +379,11 @@ boolean SaveTheGame(FILE *file, int x, int y) {
     for (j = 0; j < mapheight; j++) {
       ob = actorat[i][j];
 
-      if (ISPOINTER(ob))
+      if (ISPOINTER(ob)) {
         actnum = 0x8000 | (word)(ob - objlist);
-      else
+      } else {
         actnum = (word)(uintptr_t)ob;
+      }
 
       fwrite(&actnum, sizeof(actnum), 1, file);
       checksum = DoChecksum(&actnum, sizeof(actnum), checksum);
@@ -387,12 +401,13 @@ boolean SaveTheGame(FILE *file, int x, int y) {
     // player object needs special treatment as it's in WL_AGENT.C and not in
     // WL_ACT2.C which could cause problems for the relative addressing
     //
-    if (ob == player)
+    if (ob == player) {
       nullobj.state =
           (statetype *)((uintptr_t)nullobj.state - (uintptr_t)&s_player);
-    else
+    } else {
       nullobj.state =
           (statetype *)((uintptr_t)nullobj.state - (uintptr_t)&s_grdstand);
+    }
 
     fwrite(&nullobj, sizeof(nullobj), 1, file);
   }
@@ -491,10 +506,11 @@ boolean LoadTheGame(FILE *file, int x, int y) {
       fread(&actnum, sizeof(word), 1, file);
       checksum = DoChecksum(&actnum, sizeof(word), checksum);
 
-      if (actnum & 0x8000)
+      if (actnum & 0x8000) {
         actorat[i][j] = &objlist[actnum & 0x7fff];
-      else
+      } else {
         actorat[i][j] = (objtype *)(uintptr_t)actnum;
+      }
     }
   }
 
@@ -507,8 +523,9 @@ boolean LoadTheGame(FILE *file, int x, int y) {
   while (1) {
     fread(&nullobj, sizeof(nullobj), 1, file);
 
-    if (nullobj.active == ac_badobject)
+    if (nullobj.active == ac_badobject) {
       break;
+    }
 
     if (nullobj.obclass == playerobj) {
       newobj = player;
@@ -570,14 +587,18 @@ boolean LoadTheGame(FILE *file, int x, int y) {
 
         if (MAPSPOT(x, y, 1) == PUSHABLETILE && !tilemap[x][y] &&
             !VALIDAREA(tile)) {
-          if (VALIDAREA(*(map + 1)))
+          if (VALIDAREA(*(map + 1))) {
             tile = *(map + 1);
-          if (VALIDAREA(*(map - mapwidth)))
+          }
+          if (VALIDAREA(*(map - mapwidth))) {
             tile = *(map - mapwidth);
-          if (VALIDAREA(*(map + mapwidth)))
+          }
+          if (VALIDAREA(*(map + mapwidth))) {
             tile = *(map + mapwidth);
-          if (VALIDAREA(*(map - 1)))
+          }
+          if (VALIDAREA(*(map - 1))) {
             tile = *(map - 1);
+          }
 
           *map = tile;
           MAPSPOT(x, y, 1) = 0;
@@ -594,8 +615,9 @@ boolean LoadTheGame(FILE *file, int x, int y) {
 
   fread(&lastgamemusicoffset, sizeof(lastgamemusicoffset), 1, file);
 
-  if (lastgamemusicoffset < 0)
+  if (lastgamemusicoffset < 0) {
     lastgamemusicoffset = 0;
+  }
 
   if (oldchecksum != checksum) {
     Message(STR_SAVECHT1 "\n" STR_SAVECHT2 "\n" STR_SAVECHT3 "\n" STR_SAVECHT4);
@@ -790,21 +812,15 @@ void FinishSignon(void) {
   WindowW = 320;
   PrintY = 190;
 
-#ifndef JAPAN
   SETFONTCOLOR(14, 4);
 
-#ifdef SPANISH
-  US_CPrint("Oprima una tecla");
-#else
   US_CPrint("Press a key");
-#endif
-
-#endif
 
   VW_UpdateScreen();
 
-  if (!param_nowait)
+  if (!param_nowait) {
     IN_Ack();
+  }
 
 #ifndef JAPAN
   VW_Bar(0, 189, 300, 11, VL_GetPixel(0, 0));
@@ -812,11 +828,7 @@ void FinishSignon(void) {
   PrintY = 190;
   SETFONTCOLOR(10, 4);
 
-#ifdef SPANISH
-  US_CPrint("pensando...");
-#else
   US_CPrint("Working...");
-#endif
 
   VW_UpdateScreen();
 #endif
@@ -825,8 +837,9 @@ void FinishSignon(void) {
 #else
   VW_UpdateScreen();
 
-  if (!param_nowait)
+  if (!param_nowait) {
     VW_WaitVBL(3 * 70);
+  }
 #endif
 }
 
@@ -989,8 +1002,9 @@ void DoJukebox(void) {
   };
 
   IN_ClearKeysDown();
-  if (!AdLibPresent && !SoundBlasterPresent)
+  if (!AdLibPresent && !SoundBlasterPresent) {
     return;
+  }
 
   MenuFadeOut();
 
@@ -1033,8 +1047,9 @@ void DoJukebox(void) {
   do {
     which = HandleMenu(&MusicItems, &MusicMenu[start], NULL);
     if (which >= 0) {
-      if (lastsong >= 0)
+      if (lastsong >= 0) {
         MusicMenu[start + lastsong].active = 1;
+      }
 
       StartCPMusic(songs[start + which]);
       MusicMenu[start + which].active = 2;
@@ -1074,11 +1089,12 @@ static void InitGame() {
   int numJoysticks = SDL_NumJoysticks();
   if (param_joystickindex &&
       (param_joystickindex < -1 || param_joystickindex >= numJoysticks)) {
-    if (!numJoysticks)
+    if (!numJoysticks) {
       printf("No joysticks are available to SDL!\n");
-    else
+    } else {
       printf("The joystick index must be between -1 and %i!\n",
              numJoysticks - 1);
+    }
     exit(1);
   }
 
@@ -1137,7 +1153,6 @@ static void InitGame() {
     //
     IntroScreen();
 
-
   //
   // load in and lock down some basic chunks
   //
@@ -1177,9 +1192,9 @@ boolean SetViewSize(unsigned width, unsigned height) {
   centerx = viewwidth / 2 - 1;
   centery = viewheight / 2;
   shootdelta = viewwidth / 10;
-  if (viewheight == screenHeight)
+  if (viewheight == screenHeight) {
     viewscreenx = viewscreeny = screenofs = 0;
-  else {
+  } else {
     viewscreenx = (screenWidth - viewwidth) / 2;
     viewscreeny = (screenHeight - scaleFactor * STATUSLINES - viewheight) / 2;
     screenofs = viewscreeny * screenWidth + viewscreenx;
@@ -1219,13 +1234,14 @@ void ShowViewSize(int width) {
 
 void NewViewSize(int width) {
   viewsize = width;
-  if (viewsize == 21)
+  if (viewsize == 21) {
     SetViewSize(screenWidth, screenHeight);
-  else if (viewsize == 20)
+  } else if (viewsize == 20) {
     SetViewSize(screenWidth, screenHeight - scaleFactor * STATUSLINES);
-  else
+  } else {
     SetViewSize(width * 16 * screenWidth / 320,
                 (unsigned)(width * 16 * HEIGHTRATIO * screenHeight / 200));
+  }
 }
 
 //===========================================================================
@@ -1247,18 +1263,21 @@ void Quit(const char *errorStr, ...) {
     va_start(vlist, errorStr);
     vsnprintf(error, sizeof(error), errorStr, vlist);
     va_end(vlist);
-  } else
+  } else {
     error[0] = '\0';
+  }
 
   ret = *error != '\0';
 
-  if (!ret)
+  if (!ret) {
     WriteConfig();
+  }
 
   ShutdownId();
 
-  if (ret)
+  if (ret) {
     Error(error);
+  }
 
   exit(ret);
 }
@@ -1306,15 +1325,17 @@ static void DemoLoop() {
 #ifndef GOODTIMES
 #ifndef SPEAR
 #ifndef JAPAN
-  if (!param_nowait)
+  if (!param_nowait) {
     NonShareware();
+  }
 #endif
 #else
 #ifndef GOODTIMES
 #ifndef SPEARDEMO
   extern void CopyProtection(void);
-  if (!param_goodtimes)
+  if (!param_goodtimes) {
     CopyProtection();
+  }
 #endif
 #endif
 #endif
@@ -1324,8 +1345,9 @@ static void DemoLoop() {
   StartCPMusic(INTROSONG);
 
 #ifndef JAPAN
-  if (!param_nowait)
+  if (!param_nowait) {
     PG13();
+  }
 #endif
 
 #endif
@@ -1351,8 +1373,9 @@ static void DemoLoop() {
       VW_UpdateScreen();
       VW_FadeIn();
 #endif
-      if (IN_UserInput(TickBase * 15))
+      if (IN_UserInput(TickBase * 15)) {
         break;
+      }
       VW_FadeOut();
       //
       // credits page
@@ -1360,8 +1383,9 @@ static void DemoLoop() {
       VWB_DrawPic(0, 0, CREDITSPIC);
       VW_UpdateScreen();
       VW_FadeIn();
-      if (IN_UserInput(TickBase * 10))
+      if (IN_UserInput(TickBase * 10)) {
         break;
+      }
       VW_FadeOut();
       //
       // high scores
@@ -1370,8 +1394,9 @@ static void DemoLoop() {
       VW_UpdateScreen();
       VW_FadeIn();
 
-      if (IN_UserInput(TickBase * 10))
+      if (IN_UserInput(TickBase * 10)) {
         break;
+      }
 #endif
       //
       // demo
@@ -1383,21 +1408,24 @@ static void DemoLoop() {
       PlayDemo(0);
 #endif
 
-      if (playstate == ex_abort)
+      if (playstate == ex_abort) {
         break;
+      }
       VW_FadeOut();
-      if (screenHeight % 200 != 0)
+      if (screenHeight % 200 != 0) {
         VL_ClearScreen(0);
+      }
       StartCPMusic(INTROSONG);
     }
 
     VW_FadeOut();
 
 #ifdef DEBUGKEYS
-    if (Keyboard[sc_Tab] && param_debugmode)
+    if (Keyboard[sc_Tab] && param_debugmode) {
       RecordDemo();
-    else
+    } else {
       US_ControlPanel(0);
+    }
 #else
     US_ControlPanel(0);
 #endif
@@ -1443,11 +1471,12 @@ void CheckParameters(int argc, char *argv[]) {
     else IFARG("--hard") param_difficulty = 3;
     else IFARG("--nowait") param_nowait = true;
     else IFARG("--tedlevel") {
-      if (++i >= argc)
+      if (++i >= argc) {
         snprintf(error, sizeof(error),
                  "The tedlevel option is missing the level argument!");
-      else
+      } else {
         param_tedlevel = atoi(argv[i]);
+      }
     }
     else IFARG("--windowed") fullscreen = false;
     else IFARG("--windowed-mouse") {
@@ -1455,113 +1484,124 @@ void CheckParameters(int argc, char *argv[]) {
       forcegrabmouse = true;
     }
     else IFARG("--res") {
-      if (i + 2 >= argc)
+      if (i + 2 >= argc) {
         snprintf(error, sizeof(error),
                  "The res option needs the width and/or the height argument!");
-      else {
+      } else {
         screenWidth = atoi(argv[++i]);
         screenHeight = atoi(argv[++i]);
         int factor = screenWidth / 320;
         if ((screenWidth % 320) ||
-            (screenHeight != 200 * factor && screenHeight != 240 * factor))
+            (screenHeight != 200 * factor && screenHeight != 240 * factor)) {
           snprintf(error, sizeof(error),
                    "Screen size must be a multiple of 320x200 or 320x240!");
+        }
       }
     }
     else IFARG("--resf") {
-      if (i + 2 >= argc)
+      if (i + 2 >= argc) {
         snprintf(error, sizeof(error),
                  "The resf option needs the width and/or the height argument!");
-      else {
+      } else {
         screenWidth = atoi(argv[++i]);
         screenHeight = atoi(argv[++i]);
-        if (screenWidth < 320)
+        if (screenWidth < 320) {
           snprintf(error, sizeof(error), "Screen width must be at least 320!");
-        if (screenHeight < 200)
+        }
+        if (screenHeight < 200) {
           snprintf(error, sizeof(error), "Screen height must be at least 200!");
+        }
       }
     }
     else IFARG("--bits") {
-      if (++i >= argc)
+      if (++i >= argc) {
         snprintf(error, sizeof(error),
                  "The bits option is missing the color depth argument!");
-      else {
+      } else {
         screenBits = atoi(argv[i]);
 
-        if (screenBits > 32 || (screenBits & 7))
+        if (screenBits > 32 || (screenBits & 7)) {
           snprintf(error, sizeof(error),
                    "Screen color depth must be 8, 16, 24, or 32!");
+        }
       }
     }
     else IFARG("--extravbls") {
-      if (++i >= argc)
+      if (++i >= argc) {
         snprintf(error, sizeof(error),
                  "The extravbls option is missing the vbls argument!");
-      else {
+      } else {
         extravbls = atoi(argv[i]);
-        if (extravbls < 0)
+        if (extravbls < 0) {
           snprintf(error, sizeof(error), "Extravbls must be positive!");
+        }
       }
     }
     else IFARG("--joystick") {
-      if (++i >= argc)
+      if (++i >= argc) {
         snprintf(error, sizeof(error),
                  "The joystick option is missing the index argument!");
-      else
+      } else {
         param_joystickindex = atoi(argv[i]); // index is checked in InitGame
+      }
     }
     else IFARG("--joystickhat") {
-      if (++i >= argc)
+      if (++i >= argc) {
         snprintf(error, sizeof(error),
                  "The joystickhat option is missing the index argument!");
-      else
+      } else {
         param_joystickhat = atoi(argv[i]);
+      }
     }
     else IFARG("--samplerate") {
-      if (++i >= argc)
+      if (++i >= argc) {
         snprintf(error, sizeof(error),
                  "The samplerate option is missing the rate argument!");
-      else {
+      } else {
         param_samplerate = atoi(argv[i]);
 
-        if (param_samplerate < 7042 || param_samplerate > 44100)
+        if (param_samplerate < 7042 || param_samplerate > 44100) {
           snprintf(error, sizeof(error),
                    "The samplerate must be between 7042 and 44100!");
+        }
       }
     }
     else IFARG("--audiobuffer") {
-      if (++i >= argc)
+      if (++i >= argc) {
         snprintf(error, sizeof(error),
                  "The audiobuffer option is missing the size argument!");
-      else
+      } else {
         param_audiobuffer = atoi(argv[i]);
+      }
     }
     else IFARG("--mission") {
-      if (++i >= argc)
+      if (++i >= argc) {
         snprintf(error, sizeof(error),
                  "The mission option is missing the mission argument!");
-      else {
+      } else {
         param_mission = atoi(argv[i]);
 
-        if (param_mission < 0 || param_mission > 3)
+        if (param_mission < 0 || param_mission > 3) {
           snprintf(error, sizeof(error),
                    "The mission option must be between 0 and 3!");
+        }
       }
     }
     else IFARG("--configdir") {
-      if (++i >= argc)
+      if (++i >= argc) {
         snprintf(error, sizeof(error),
                  "The configdir option is missing the dir argument!");
-      else {
+      } else {
         len = strlen(argv[i]);
 
-        if (len + 2 > sizeof(configdir))
+        if (len + 2 > sizeof(configdir)) {
           snprintf(error, sizeof(error), "The config directory is too long!");
-        else {
-          if (argv[i][len] != '/' && argv[i][len] != '\\')
+        } else {
+          if (argv[i][len] != '/' && argv[i][len] != '\\') {
             snprintf(configdir, sizeof(configdir), "%s/", argv[i]);
-          else
+          } else {
             snprintf(configdir, sizeof(configdir), "%s", argv[i]);
+          }
         }
       }
     }
@@ -1593,11 +1633,7 @@ void CheckParameters(int argc, char *argv[]) {
 */
 
 int main(int argc, char *argv[]) {
-#if defined(_arch_dreamcast)
-  DC_Init();
-#else
   CheckParameters(argc, argv);
-#endif
 
   CheckForEpisodes();
 
