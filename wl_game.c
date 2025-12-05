@@ -2,7 +2,6 @@
 
 #include "wl_def.h"
 #include "wl_cloudsky.h"
-#include "wl_shade.h"
 #include <SDL_mixer.h>
 
 /*
@@ -799,10 +798,6 @@ void SetupGameLevel(void) {
   if (GetFeatureFlags() & FF_CLOUDSKY) {
     InitSky();
   }
-#endif
-
-#ifdef USE_SHADING
-  InitLevelShadeTable();
 #endif
 
 //

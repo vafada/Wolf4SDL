@@ -34,7 +34,6 @@
 
 #define USE_FEATUREFLAGS // Enables the level feature flags (see bottom of
                          // wl_def.h)
-// #define USE_SHADING         // Enables shading support (see wl_shade.c)
 // #define USE_DIR3DSPR        // Enables directional 3d sprites
 // #define USE_FLOORCEILINGTEX // Enables texture-mapped floors and ceilings
 // (see wl_plane.c) #define USE_MULTIFLATS      // Enables floor and ceiling

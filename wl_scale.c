@@ -2,10 +2,6 @@
 
 #include "wl_def.h"
 
-#ifdef USE_SHADING
-#include "wl_shade.h"
-#endif
-
 /*
 =============================================================================
 
@@ -64,11 +60,7 @@ void ScaleLine(int16_t x, int16_t toppix, fixed fracstep, byte *linesrc,
       if (endpix > viewheight)
         endpix = viewheight; // clip lower boundary
 
-#ifdef USE_SHADING
-      color = shade[*src];
-#else
       color = *src;
-#endif
       dest = vbuf + ylookup[startpix] + x;
 
       while (startpix < endpix) {
@@ -108,9 +100,6 @@ void ScaleShape(visobj_t *sprite) {
 
   linesrc = PM_GetSpritePage(sprite->shapenum);
   shape = (compshape_t *)linesrc;
-#ifdef USE_SHADING
-  shade = GetShade(sprite->viewheight, sprite->flags);
-#endif
   fracstep = FixedDiv(height, TEXTURESIZE / 2);
   frac = shape->leftpix * fracstep;
 
@@ -177,9 +166,6 @@ void SimpleScaleShape(int dispx, int shapenum, int dispheight) {
 
   linesrc = PM_GetSpritePage(shapenum);
   shape = (compshape_t *)linesrc;
-#ifdef USE_SHADING
-  shade = GetShade(dispheight, FL_FULLBRIGHT);
-#endif
   fracstep = FixedDiv(height, TEXTURESIZE / 2);
   frac = shape->leftpix * fracstep;
 
@@ -292,9 +278,6 @@ void Scale3DShape(visobj_t *sprite, int x1, int x2, fixed ny1, fixed ny2,
         continue;
 
       if (wallheight[slinex] < (height >> 12)) {
-#ifdef USE_SHADING
-        shade = GetShade(scale1 << 3, sprite->flags);
-#endif
         fracstep = FixedDiv(scale1, TEXTURESIZE / 2);
         toppix = centery - scale1;
 

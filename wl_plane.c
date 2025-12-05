@@ -51,9 +51,6 @@ void DrawSpan(int x1, int x2, int height) {
   if (!count)
     return; // nothing to draw
 
-#ifdef USE_SHADING
-  shade = GetShade(height << 3, 0);
-#endif
   dest = vbuf + ylookup[centery - 1 - height] + x1;
   rowofs = ylookup[(height << 1) + 1]; // toprow to bottomrow delta
 
@@ -115,11 +112,7 @@ void DrawSpan(int x1, int x2, int height) {
           lastceilingpage = ceilingpage;
           ceilingsource = PM_GetPage(ceilingpage);
         }
-#ifdef USE_SHADING
-        *dest = shade[ceilingsource[texture]];
-#else
         *dest = ceilingsource[texture];
-#endif
       }
 
       //
@@ -130,11 +123,7 @@ void DrawSpan(int x1, int x2, int height) {
           lastfloorpage = floorpage;
           floorsource = PM_GetPage(floorpage);
         }
-#ifdef USE_SHADING
-        dest[rowofs] = shade[floorsource[texture]];
-#else
         dest[rowofs] = floorsource[texture];
-#endif
       }
     }
 
@@ -172,9 +161,6 @@ void DrawSpan(int x1, int x2, int height) {
   if (!count)
     return; // nothing to draw
 
-#ifdef USE_SHADING
-  shade = GetShade(height << 3, 0);
-#endif
   dest = vbuf + ylookup[centery - 1 - height] + x1;
   rowofs = ylookup[(height << 1) + 1]; // toprow to bottomrow delta
 
@@ -194,13 +180,8 @@ void DrawSpan(int x1, int x2, int height) {
     texture = ((xfrac >> FIXED2TEXSHIFT) & TEXTUREMASK) +
               ((yfrac >> (FIXED2TEXSHIFT + TEXTURESHIFT)) & (TEXTURESIZE - 1));
 
-#ifdef USE_SHADING
-    *dest = shade[ceilingsource[texture]];
-    dest[rowofs] = shade[floorsource[texture]];
-#else
     *dest = ceilingsource[texture];
     dest[rowofs] = floorsource[texture];
-#endif
     dest++;
     xfrac += xstep;
     yfrac += ystep;

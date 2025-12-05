@@ -3,7 +3,6 @@
 #include "wl_def.h"
 #include "wl_cloudsky.h"
 #include "wl_atmos.h"
-#include "wl_shade.h"
 
 /*
 =============================================================================
@@ -299,10 +298,6 @@ void ScalePost(void) {
   }
 #endif
 
-#ifdef USE_SHADING
-  byte *shade = GetShade(wallheight[postx], 0);
-#endif
-
   ywcount = yd = wallheight[postx] >> 3;
   if (yd <= 0)
     yd = 100;
@@ -326,11 +321,7 @@ void ScalePost(void) {
   if (yw < 0)
     return;
 
-#ifdef USE_SHADING
-  col = shade[postsource[yw]];
-#else
   col = postsource[yw];
-#endif
   yendoffs = yendoffs * bufferPitch + postx;
   while (yoffs <= yendoffs) {
     vbuf[yendoffs] = col;
@@ -342,11 +333,7 @@ void ScalePost(void) {
       } while (ywcount <= 0);
       if (yw < 0)
         break;
-#ifdef USE_SHADING
-      col = shade[postsource[yw]];
-#else
       col = postsource[yw];
-#endif
     }
     yendoffs -= bufferPitch;
   }
@@ -594,26 +581,15 @@ void VGAClearScreen(void) {
   byte ceiling = vgaCeiling[(gamestate.episode * 10) + gamestate.mapon];
 
   int y;
-  byte *src, *dest = vbuf;
-#ifdef USE_SHADING
-  for (y = 0; y < centery; y++, dest += bufferPitch) {
-    src = GetShade((centery - y) << 3, 0);
+  byte *dest = vbuf;
 
-    memset(dest, src[ceiling], viewwidth);
-  }
-
-  for (; y < viewheight; y++, dest += bufferPitch) {
-    src = GetShade((y - centery) << 3, 0);
-
-    memset(dest, src[0x19], viewwidth);
-  }
-#else
+  // draw ceiling
   for (y = 0; y < centery; y++, dest += bufferPitch)
     memset(dest, ceiling, viewwidth);
 
+  // draw floor
   for (; y < viewheight; y++, dest += bufferPitch)
     memset(dest, 0x19, viewwidth);
-#endif
 }
 
 //==========================================================================
