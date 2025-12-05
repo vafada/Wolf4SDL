@@ -13,14 +13,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
-#if defined(_arch_dreamcast)
-#include <string.h>
-#include "dc/dc_main.h"
-#elif !defined(_WIN32)
 #include <stdint.h>
 #include <string.h>
 #include <stdarg.h>
-#endif
+
 #include <SDL.h>
 
 #if !defined O_BINARY
@@ -1778,25 +1774,6 @@ extern void EndText(void);
 /*
 =============================================================================
 
-                               GP2X DEFINITIONS
-
-=============================================================================
-*/
-
-#if defined(GP2X)
-
-#if defined(GP2X_940)
-void GP2X_MemoryInit(void);
-void GP2X_Shutdown(void);
-#endif
-void GP2X_ButtonDown(int button);
-void GP2X_ButtonUp(int button);
-
-#endif
-
-/*
-=============================================================================
-
                              MISC DEFINITIONS
 
 =============================================================================
@@ -1818,7 +1795,7 @@ void GP2X_ButtonUp(int button);
 
 #define ISPOINTER(x) ((((uintptr_t)(x)) & ~0xffff) != 0)
 
-#ifndef _WIN32
+
 static inline char *itoa(int value, char *string, int radix) {
   int len = strlen(string) + 1;
 
@@ -1834,7 +1811,6 @@ static inline char *ltoa(long value, char *string, int radix) {
 
   return string;
 }
-#endif
 
 /*
 =============================================================================

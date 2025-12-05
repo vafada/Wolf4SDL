@@ -19,23 +19,10 @@
 #endif
 
 boolean fullscreen = true;
-#if defined(_arch_dreamcast)
-int16_t screenWidth = 320;
-int16_t screenHeight = 200;
-int screenBits = 8;
-#elif defined(GP2X)
-int16_t screenWidth = 320;
-int16_t screenHeight = 240;
-#if defined(GP2X_940)
-int screenBits = 8;
-#else
-int screenBits = 16;
-#endif
-#else
+
 int16_t screenWidth = 640;
 int16_t screenHeight = 400;
 int screenBits = -1; // use "best" color depth according to libSDL
-#endif
 
 SDL_Surface *screen = NULL;
 unsigned screenPitch;

@@ -9,17 +9,8 @@ Id Software Caching Manager
 
 =============================================================================
 */
-
-#include <sys/types.h>
-#if defined _WIN32
-#include <io.h>
-#elif defined _arch_dreamcast
-#include <unistd.h>
-#else
 #include <sys/uio.h>
 #include <unistd.h>
-#endif
-
 #include "wl_def.h"
 
 #define THREEBYTEGRSTARTS
